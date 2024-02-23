@@ -137,11 +137,11 @@ public class Arm extends SubsystemBase {
     TalonFXConfiguration teleConfigs = new TalonFXConfiguration();
 
     //PID Configs
-    teleConfigs.Slot0.kP = 40; // An error of 1 rotations results in 40 amps output
+    teleConfigs.Slot0.kP = 5500; // An error of 1 rotations results in 40 amps output
     teleConfigs.Slot0.kD = 2; // A change of 1 rotation per second results in 2 amps output
     // Peak output of 130 amps
-    teleConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 130;
-    teleConfigs.TorqueCurrent.PeakReverseTorqueCurrent = 130;
+    teleConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 6000;
+    teleConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -2000;
 
     //Software Limits
     //configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -242,7 +242,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isIntakeExtendSafe(){
-    return getArmPosition() > 0.1;
+    return getArmPosition() > 0.04;
   }
 
   public boolean isIntakeFullyRetracted(){
@@ -261,9 +261,6 @@ public class Arm extends SubsystemBase {
 
     SmartDashboard.putNumber("Arm Position", m_ArmLeftMotor.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("Telescope Position", m_TelescopeMotor.getPosition().getValueAsDouble());
-
-    SmartDashboard.putNumber("Arm Setpoint", this.getArmSetpoint());
-        SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
   }
 
   @Override

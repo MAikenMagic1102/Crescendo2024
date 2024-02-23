@@ -74,8 +74,8 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ArmControl(arm, () -> -joystick2.getRightY(), () -> -joystick2.getLeftY()));
 
-    joystick2.a().onTrue(new InstantCommand(() -> arm.setArmPosition(0.0)));
-    joystick2.b().onTrue(new InstantCommand(() -> arm.setArmPosition(0.12)));
+    joystick2.a().onTrue(new ArmToIntakePos(arm).withTimeout(3));
+    joystick2.b().onTrue(new ArmStow(arm).withTimeout(3));
     joystick2.x().onTrue(new InstantCommand(() -> arm.setArmPosition(0.17)));
     joystick2.y().onTrue(new InstantCommand(() -> arm.setArmPosition(0.25)));
 
