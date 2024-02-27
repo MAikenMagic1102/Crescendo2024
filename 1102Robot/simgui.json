@@ -30,14 +30,37 @@
       "/SmartDashboard/Module 3": "Mechanism2d",
       "/SmartDashboard/Shooter Throttle": "String Chooser",
       "/SmartDashboard/Speed Percent": "String Chooser"
+    },
+    "windows": {
+      "/Pose": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "units": "meters",
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Arm Sim": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
     "transitory": {
+      "Pose": {
+        "double[]##v_/Pose/robotPose": {
+          "open": true
+        },
+        "open": true
+      },
       "SmartDashboard": {
-        "Auto Chooser": {
-          "open": false
-        }
+        "open": true
       }
     }
   },

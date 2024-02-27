@@ -35,7 +35,7 @@ public class SwerveDriveControl extends Command {
   private PhoenixPIDController m_thetaController;
   private SendableChooser<Double> m_speedChooser;
   private SwerveRequest m_Request;
-  private SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
   private SwerveRequest.FieldCentricFacingAngle driveAngle = new SwerveRequest.FieldCentricFacingAngle();
 
   /** Creates a new SwerveDriveControl. */

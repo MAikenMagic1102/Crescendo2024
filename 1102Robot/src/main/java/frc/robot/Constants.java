@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.Arm.ArmSetpoint;
 
 /** Add your docs here. */
 public final class Constants {
@@ -48,13 +49,18 @@ public final class Constants {
         public static final double arm_kI = 0.0;
         public static final double arm_kD = 0.0;
 
-
         //Testing
         public static final double kArmReduction = 200;
         public static final double kArmMass = 08.0; // Kilograms
         public static final double kArmLength = Units.inchesToMeters(30);
         public static final double kMinAngleRads = Units.degreesToRadians(-10);
         public static final double kMaxAngleRads = Units.degreesToRadians(90);
+
+        public static final double ArmExtendSafe = 0.025;
+        public static final ArmSetpoint INTAKE = new ArmSetpoint(-0.02, 0.06);
+        public static final ArmSetpoint STOW = new ArmSetpoint(0.025, 0.005);
+        public static final ArmSetpoint AMP = new ArmSetpoint(0.25, 0.06);
+        public static final ArmSetpoint SUBWOOFER = new ArmSetpoint(0.0, 0.0);
     }
 
     public static final class Limelight{

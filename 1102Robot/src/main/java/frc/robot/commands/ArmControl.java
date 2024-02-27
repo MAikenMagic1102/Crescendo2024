@@ -8,7 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.Arm;
 
 public class ArmControl extends Command {
   private Arm m_Arm;
@@ -31,6 +31,7 @@ public class ArmControl extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,9 +50,10 @@ public class ArmControl extends Command {
 
       if(!m_Arm.getArmHolding()){ //If we just moved the arm we need to save the current position to hold.
         lastArmSetpoint = m_Arm.getArmPosition();
+        //If we aren't using the thumbsick we want to hold position
+        m_Arm.setArmPosition(lastArmSetpoint);
       }
-      //If we aren't using the thumbsick we want to hold position
-      m_Arm.setArmPosition(lastArmSetpoint);
+
     }
 
     if(Math.abs(teleVal) > 0.1){ //If we are pushing thumbstick we want manual control
@@ -60,9 +62,10 @@ public class ArmControl extends Command {
 
       if(!m_Arm.getTeleHolding()){ //If we just moved the telescope we need to save the current position to hold.
         lastTeleSetpoint = m_Arm.getTelescopePosition();
+        //If we aren't using the thumbsick we want to hold position
+        m_Arm.setTelescopePosition(lastTeleSetpoint);
       }
-      //If we aren't using the thumbsick we want to hold position
-      m_Arm.setTelescopePosition(lastTeleSetpoint);
+
     }
 
   }

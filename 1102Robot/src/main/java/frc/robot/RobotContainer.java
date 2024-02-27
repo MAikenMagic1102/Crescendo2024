@@ -23,9 +23,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Arm.Arm;
+import frc.robot.subsystems.Arm.Arm.Position;
 import frc.robot.commands.*;
 
 public class RobotContainer {
@@ -74,12 +75,11 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ArmControl(arm, () -> -joystick2.getRightY(), () -> -joystick2.getLeftY()));
 
-    joystick2.a().onTrue(new InstantCommand(() -> arm.setArmPosition(0.0)));
-    joystick2.b().onTrue(new InstantCommand(() -> arm.setArmPosition(0.12)));
-    joystick2.x().onTrue(new InstantCommand(() -> arm.setArmPosition(0.17)));
-    joystick2.y().onTrue(new InstantCommand(() -> arm.setArmPosition(0.25)));
+    joystick2.a().onTrue(new ArmToIntakePosition(arm));
+    joystick2.b().onTrue(new ArmToHomePosition(arm));
+    joystick2.x().onTrue(new InstantCommand(() -> arm.setTargetScorePosition(Position.AMP)));
 
-    joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()));
+    joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new InstantCommand(() -> arm.setArmtoScorePosition(0.0), arm)));
     joystick.rightTrigger().whileFalse(new InstantCommand(() -> shooter.ShooterStop()));
     // reset the field-centric heading on left bumper press
     joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));

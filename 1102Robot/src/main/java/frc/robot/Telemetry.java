@@ -88,7 +88,7 @@ public class Telemetry {
         fieldPub.set(new double[] {
             pose.getX(),
             pose.getY(),
-            pose.getRotation().getRadians()
+            pose.getRotation().getDegrees()
         });
 
         /* Telemeterize the robot's general speeds */

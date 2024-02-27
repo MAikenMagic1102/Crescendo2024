@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Arm;
 
 import org.opencv.core.Mat;
 
@@ -57,6 +57,16 @@ public class Arm extends SubsystemBase {
 
   private boolean holdingArm = true;
   private boolean holdingTele = true;
+
+  public enum Position{
+    AMP,
+    SUBWOOFER,
+    RANGED,
+  };
+
+  private Position currentTargetScoreState = Position.SUBWOOFER;
+  private double currentTargetArmPosition = 0.0;
+  private double currentTargetTelescopePosition = 0.0;
 
   private final SingleJointedArmSim m_armSim =
       new SingleJointedArmSim(
@@ -137,11 +147,11 @@ public class Arm extends SubsystemBase {
     TalonFXConfiguration teleConfigs = new TalonFXConfiguration();
 
     //PID Configs
-    teleConfigs.Slot0.kP = 40; // An error of 1 rotations results in 40 amps output
+    teleConfigs.Slot0.kP = 8000; // An error of 1 rotations results in 40 amps output
     teleConfigs.Slot0.kD = 2; // A change of 1 rotation per second results in 2 amps output
     // Peak output of 130 amps
-    teleConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 130;
-    teleConfigs.TorqueCurrent.PeakReverseTorqueCurrent = 130;
+    teleConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 10000;
+    teleConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -10000;
 
     //Software Limits
     //configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -242,15 +252,41 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isIntakeExtendSafe(){
-    return getArmPosition() > 0.1;
+    return getArmPosition() > 0.02;
   }
 
   public boolean isIntakeFullyRetracted(){
-    return getTelescopePosition() < 0.02;
+    return getTelescopePosition() < 0.01;
   }
 
   public boolean isIntakeFullyExtended(){
-    return getTelescopePosition() > 0.05;
+    return getTelescopePosition() > 0.055;
+  }
+
+  public boolean isArmAtAmpPosition(){
+    return getArmPosition() > 0.23;
+  }
+
+  public void setTargetScorePosition(Position pos){
+    currentTargetScoreState = pos;
+  }
+
+  public void setArmtoScorePosition(double distance){
+    switch (currentTargetScoreState) {
+      case AMP:
+        currentTargetArmPosition = Constants.Arm.AMP.rotArmSetpoint;
+        currentTargetTelescopePosition = Constants.Arm.AMP.telescopeSetpoint;
+      break;
+      case SUBWOOFER:
+        currentTargetArmPosition = Constants.Arm.SUBWOOFER.rotArmSetpoint;
+        currentTargetTelescopePosition = Constants.Arm.SUBWOOFER.telescopeSetpoint;
+      break;
+      case RANGED:
+      //Lookup Range in a TreeMap or 2?
+      break;
+    }
+    setArmPosition(currentTargetArmPosition);
+    setTelescopePosition(currentTargetTelescopePosition);
   }
 
   @Override
@@ -263,7 +299,9 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("Telescope Position", m_TelescopeMotor.getPosition().getValueAsDouble());
 
     SmartDashboard.putNumber("Arm Setpoint", this.getArmSetpoint());
-        SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
+    SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
+
+    SmartDashboard.putString("Arm Target Score Position", currentTargetScoreState.toString());
   }
 
   @Override
