@@ -47,7 +47,7 @@ public class ShooterControl extends Command {
   public void execute() {
 
     if(m_feedNow.getAsBoolean()){
-      m_Shooter.feederIn();
+      m_Shooter.feederShootNow();
     }else{
       m_Shooter.feederStop();
     }

@@ -31,7 +31,7 @@ public class ArmToHomePosition extends Command {
   @Override
   public void execute() {
 
-    if(intakeArm.isIntakeFullyRetracted()){
+    if(intakeArm.isIntakeRetracted()){
       intakeArm.setArmPosition(Constants.Arm.STOW.rotArmSetpoint);
       isFinished = true;
     } else {

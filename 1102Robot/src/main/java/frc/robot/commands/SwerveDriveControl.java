@@ -21,7 +21,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class SwerveDriveControl extends Command {
   private CommandSwerveDrivetrain m_Swerve;
   private double MaxSpeed = 6; // 6 meters per second desired top speed
-  private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+  private double MaxAngularRate = 4 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   private DoubleSupplier xSup;
   private DoubleSupplier ySup;
@@ -71,7 +71,7 @@ public class SwerveDriveControl extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_thetaController = new PhoenixPIDController(3.2, 0.0, 0.0);
+    m_thetaController = new PhoenixPIDController(5.0, 0.0, 0.0);
     m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     driveAngle.HeadingController = m_thetaController;
   }

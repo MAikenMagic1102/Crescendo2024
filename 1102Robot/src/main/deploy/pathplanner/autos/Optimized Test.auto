@@ -24,6 +24,36 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intakeSetpoint"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getShooterSpunUp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederNoteIn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootNote"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Middle Note"
@@ -36,9 +66,69 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intakeSetpoint"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getShooterSpunUp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederNoteIn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootNote"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Left Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeSetpoint"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getShooterSpunUp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederNoteIn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootNote"
           }
         }
       ]

@@ -45,10 +45,10 @@ public class ArmControl extends Command {
     teleVal = MathUtil.applyDeadband(m_teleSupplier.getAsDouble(), 0.1);
 
     if(Math.abs(armVal) > 0.1){ //If we are pushing thumbstick we want manual control
-      m_Arm.setArmMotorOpenLoop(armVal);
+      m_Arm.setArmMotorOpenLoop(armVal * 0.6);
     }else{
-
       if(!m_Arm.getArmHolding()){ //If we just moved the arm we need to save the current position to hold.
+        m_Arm.setArmStop();
         lastArmSetpoint = m_Arm.getArmPosition();
         //If we aren't using the thumbsick we want to hold position
         m_Arm.setArmPosition(lastArmSetpoint);
@@ -57,10 +57,10 @@ public class ArmControl extends Command {
     }
 
     if(Math.abs(teleVal) > 0.1){ //If we are pushing thumbstick we want manual control
-      m_Arm.setTeleMotorOpenLoop(teleVal);
+      m_Arm.setTeleMotorOpenLoop(teleVal * 0.7);
     }else{
-
       if(!m_Arm.getTeleHolding()){ //If we just moved the telescope we need to save the current position to hold.
+        m_Arm.setTeleMotorOpenLoop(0.0 * 0.3);
         lastTeleSetpoint = m_Arm.getTelescopePosition();
         //If we aren't using the thumbsick we want to hold position
         m_Arm.setTelescopePosition(lastTeleSetpoint);

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -29,19 +31,51 @@ public class Shooter extends SubsystemBase {
 
     Shooter1 = new TalonFX(Constants.Shooter.Shooter1_ID,Constants.canivoreBus);
     Shooter2 = new TalonFX(Constants.Shooter.Shooter2_ID,Constants.canivoreBus);
+
     Feeder = new TalonFX(Constants.Shooter.Feeder_ID,Constants.canivoreBus);
+
     noteSensor = new DigitalInput(Constants.Shooter.noteSensor_DIO);
     shooterPID = new PhoenixPIDController(Constants.Shooter.Shooter_kP, Constants.Shooter.Shooter_kI, Constants.Shooter.Shooter_kD);
+
     Shooter1.setInverted(Constants.Shooter.Shooter1_Inverted);
     Shooter2.setInverted(Constants.Shooter.Shooter2_Inverted);
     Feeder.setInverted(Constants.Shooter.Feeder_Inverted);
+
+    TalonFXConfiguration shooterConfiguration = new TalonFXConfiguration();
+
+    shooterConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    TalonFXConfiguration Feederconfig = new TalonFXConfiguration();
+
+    Feederconfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    /* Retry config apply up to 5 times, report if failure */
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = Feeder.getConfigurator().apply(Feederconfig);
+      if (status.isOK()) break;
+    }
+    if(!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
+
+    StatusCode shooterStatus = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      shooterStatus = Shooter1.getConfigurator().apply(shooterConfiguration);
+      shooterStatus = Shooter2.getConfigurator().apply(shooterConfiguration);
+      if (shooterStatus.isOK()) break;
+    }
+    if(!shooterStatus.isOK()) {
+      System.out.println("Could not apply configs, error code: " + shooterStatus.toString());
+    }
+
     Shooter2.setControl(new Follower(Constants.Shooter.Shooter1_ID, true));
     shooterSpeed = new VelocityVoltage(0);
   }
 
   public void feederIn(){
-    if(noteSensor.get()){
-      Feeder.set(0.55);
+    if(!noteSensor.get()){
+      Feeder.set(0.70);
     }else{
       Feeder.set(0);
     }
@@ -88,6 +122,10 @@ public class Shooter extends SubsystemBase {
 
   public boolean getShooterReady(){
     return Math.abs(Shooter1.getClosedLoopError().getValueAsDouble()) < 100;
+  }
+
+  public boolean getIntakeHasNote(){
+    return noteSensor.get();
   }
 
   

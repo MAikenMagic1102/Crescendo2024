@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.557526116841143,
-        "y": 4.258847873688592
+        "x": 2.4167969462699492,
+        "y": 4.364801969040559
       },
       "prevControl": {
-        "x": 2.0288415532108353,
-        "y": 4.391019014596169
+        "x": 1.8881123826396413,
+        "y": 4.496973109948136
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "3 Note Optimized",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

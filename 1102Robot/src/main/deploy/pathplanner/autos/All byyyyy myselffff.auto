@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.38,
+      "y": 5.8
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Close to Center Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cindy Note 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cindy Note 3"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

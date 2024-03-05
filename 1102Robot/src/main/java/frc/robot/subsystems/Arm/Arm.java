@@ -12,6 +12,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -53,7 +55,8 @@ public class Arm extends SubsystemBase {
   private final DutyCycleOut telescopeOut = new DutyCycleOut(0);
 
   private final PositionTorqueCurrentFOC positionArmTQ = new PositionTorqueCurrentFOC(0);
-  private final PositionTorqueCurrentFOC positionTeleTQ = new PositionTorqueCurrentFOC(0);
+  //private final PositionTorqueCurrentFOC positionTeleTQ = new PositionTorqueCurrentFOC(0);
+  private final PositionVoltage postitionTelescope = new PositionVoltage(0);
 
   private boolean holdingArm = true;
   private boolean holdingTele = true;
@@ -117,56 +120,57 @@ public class Arm extends SubsystemBase {
 
   public Arm() {
     
-    m_ArmLeftMotor = new TalonFX(Constants.Arm.leftArmMotorID);
-    m_ArmRightMotor = new TalonFX(Constants.Arm.rightArmMotorID);
+    m_ArmLeftMotor = new TalonFX(Constants.Arm.leftArmMotorID, Constants.canivoreBus);
+    m_ArmRightMotor = new TalonFX(Constants.Arm.rightArmMotorID, Constants.canivoreBus);
 
     m_ArmRightMotor.setControl(new Follower(Constants.Arm.leftArmMotorID, true));
 
-    m_TelescopeMotor = new TalonFX(Constants.Arm.telescopeMotorID);
+    m_TelescopeMotor = new TalonFX(Constants.Arm.telescopeMotorID, Constants.canivoreBus);
 
     TalonFXConfiguration armConfigs = new TalonFXConfiguration();
     
     //PID Configs
-    armConfigs.Slot0.kP = 1200; // An error of 1 rotations results in 40 amps output
-    armConfigs.Slot0.kD = 2; // A change of 1 rotation per second results in 2 amps output
+    armConfigs.Slot0.kP = 2000; // An error of 1 rotations results in 40 amps output
+    armConfigs.Slot0.kD = 500; // A change of 1 rotation per second results in 2 amps output
     // Peak output of 130 amps
-    armConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 1400;
-    armConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -1400;
+    armConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 2100;
+    armConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -2100;
 
     //Software Limits
-    //configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    //configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    //configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.2;
-    //configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+    armConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    armConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    armConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.21;
+    armConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.05;
 
     armConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     //Gearing
-    armConfigs.Feedback.SensorToMechanismRatio = 125;
+    armConfigs.Feedback.SensorToMechanismRatio = 133;
 
     TalonFXConfiguration teleConfigs = new TalonFXConfiguration();
 
     //PID Configs
-    teleConfigs.Slot0.kP = 8000; // An error of 1 rotations results in 40 amps output
-    teleConfigs.Slot0.kD = 2; // A change of 1 rotation per second results in 2 amps output
+    teleConfigs.Slot0.kP = 30; // An error of 1 rotations results in 40 amps output
+    teleConfigs.Slot0.kD = 5; // A change of 1 rotation per second results in 2 amps output
     // Peak output of 130 amps
-    teleConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 10000;
-    teleConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -10000;
+    // teleConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 500;
+    // teleConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -600;
 
     //Software Limits
-    //configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    //configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    //configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.2;
-    //configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+    teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    teleConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.84;
+    teleConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
 
-    teleConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    teleConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         
-    teleConfigs.Feedback.SensorToMechanismRatio = 15;
+    teleConfigs.Feedback.SensorToMechanismRatio = 25;
 
     /* Retry config apply up to 5 times, report if failure */
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = m_ArmLeftMotor.getConfigurator().apply(armConfigs);
+      status = m_ArmRightMotor.getConfigurator().apply(armConfigs);
       if (status.isOK()) break;
     }
     if(!status.isOK()) {
@@ -174,13 +178,13 @@ public class Arm extends SubsystemBase {
     }
 
     //Now do Telescope?
-    status = StatusCode.StatusCodeNotInitialized;
+    StatusCode telescopestatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = m_TelescopeMotor.getConfigurator().apply(teleConfigs);
-      if (status.isOK()) break;
+      telescopestatus = m_TelescopeMotor.getConfigurator().apply(teleConfigs);
+      if (telescopestatus.isOK()) break;
     }
-    if(!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
+    if(!telescopestatus.isOK()) {
+      System.out.println("Could not apply configs, error code: " + telescopestatus.toString());
     }
     
 
@@ -197,8 +201,12 @@ public class Arm extends SubsystemBase {
 
   public void setArmMotorOpenLoop(double Armoutput){
     holdingArm = false;
-    leftOut.Output = Armoutput;
-    m_ArmLeftMotor.setControl(leftOut);
+    if(Armoutput < 0.0 && this.getArmPosition() <= 0.0 && !this.isIntakeFullyExtended()){
+      this.setArmStop();
+    }else{
+      leftOut.Output = Armoutput;
+      m_ArmLeftMotor.setControl(leftOut);
+    }
   }
 
   public void setTeleMotorOpenLoop(double Teleoutput){
@@ -209,14 +217,24 @@ public class Arm extends SubsystemBase {
 
   public void setArmPosition(double position){
     holdingArm = true;
-    positionArmTQ.withPosition(position).withFeedForward(10);
-    m_ArmLeftMotor.setControl(positionArmTQ);
+    if(position < -0.02 && !this.isIntakeFullyExtended()){
+      //Do not try.
+      this.setArmStop();
+    }else{
+      positionArmTQ.withPosition(position).withFeedForward(10);
+      m_ArmLeftMotor.setControl(positionArmTQ);
+    }
+
+  }
+
+  public void setArmStop(){
+    m_ArmLeftMotor.setControl(new StaticBrake());
   }
 
   public void setTelescopePosition(double position){
     holdingTele = true;
-    positionTeleTQ.withPosition(position);
-    m_TelescopeMotor.setControl(positionTeleTQ);
+    postitionTelescope.withPosition(position);
+    m_TelescopeMotor.setControl(postitionTelescope);
   }
 
   public double getArmPosition(){
@@ -252,19 +270,27 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isIntakeExtendSafe(){
-    return getArmPosition() > 0.02;
+    return getArmPosition() > 0.01 || this.isIntakeFullyExtended();
   }
 
-  public boolean isIntakeFullyRetracted(){
-    return getTelescopePosition() < 0.01;
+  public boolean isIntakeRetractSafe(){
+        return (getArmPosition() > 0.01 && getArmPosition() < 0.15) || this.isIntakeRetracted();
+  }
+
+  public boolean isIntakeRetracted(){
+    return getTelescopePosition() < 1.0;
   }
 
   public boolean isIntakeFullyExtended(){
-    return getTelescopePosition() > 0.055;
+    return getTelescopePosition() > 1.62;
   }
 
   public boolean isArmAtAmpPosition(){
     return getArmPosition() > 0.23;
+  }
+
+  public boolean isArmAtGroundPosition(){
+    return getArmPosition() < -0.03;
   }
 
   public void setTargetScorePosition(Position pos){
@@ -291,7 +317,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    //This method will be called once per scheduler run
     SmartDashboard.putNumber("Arm Motor Output", m_ArmLeftMotor.get());
     SmartDashboard.putNumber("Telescope Motor Output", m_TelescopeMotor.get());
 
@@ -302,6 +328,12 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
 
     SmartDashboard.putString("Arm Target Score Position", currentTargetScoreState.toString());
+
+    SmartDashboard.putNumber("Arm Voltage", m_ArmLeftMotor.getMotorVoltage().getValue());
+    SmartDashboard.putNumber("Telescope Voltage", m_TelescopeMotor.getMotorVoltage().getValue());
+
+    SmartDashboard.putNumber("Arm Velocity", m_ArmLeftMotor.getVelocity().getValue());
+    SmartDashboard.putNumber("Telescope Veloctiy", m_TelescopeMotor.getVelocity().getValueAsDouble());
   }
 
   @Override
