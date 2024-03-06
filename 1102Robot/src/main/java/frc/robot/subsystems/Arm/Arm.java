@@ -4,8 +4,12 @@
 
 package frc.robot.subsystems.Arm;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import org.opencv.core.Mat;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,13 +18,15 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -33,8 +39,11 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.ScoringTarget;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
@@ -61,13 +70,6 @@ public class Arm extends SubsystemBase {
   private boolean holdingArm = true;
   private boolean holdingTele = true;
 
-  public enum Position{
-    AMP,
-    SUBWOOFER,
-    RANGED,
-  };
-
-  private Position currentTargetScoreState = Position.SUBWOOFER;
   private double currentTargetArmPosition = 0.0;
   private double currentTargetTelescopePosition = 0.0;
 
@@ -117,6 +119,20 @@ public class Arm extends SubsystemBase {
           6,
           new Color8Bit(Color.kRed)));            
 
+  private final VoltageOut m_sysidControl = new VoltageOut(0.0);
+
+  private SysIdRoutine m_sysidRoutine = 
+    new SysIdRoutine(
+      new SysIdRoutine.Config(
+        null, 
+        Volts.of(4), 
+        null,
+        (state)->SignalLogger.writeString("state", state.toString())), 
+      new SysIdRoutine.Mechanism(
+        (Measure<Voltage> volts)-> m_ArmLeftMotor.setControl(m_sysidControl.withOutput(volts.in(Volts))),
+        null, 
+        this));
+
 
   public Arm() {
     
@@ -130,19 +146,21 @@ public class Arm extends SubsystemBase {
     TalonFXConfiguration armConfigs = new TalonFXConfiguration();
     
     //PID Configs
-    armConfigs.Slot0.kP = 2000; // An error of 1 rotations results in 40 amps output
-    armConfigs.Slot0.kD = 500; // A change of 1 rotation per second results in 2 amps output
-    // Peak output of 130 amps
-    armConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 2100;
-    armConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -2100;
+    // armConfigs.Slot0.kP = 2000; // An error of 1 rotations results in 40 amps output
+    // armConfigs.Slot0.kD = 500; // A change of 1 rotation per second results in 2 amps output
+    // // Peak output of 130 amps
+    // armConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 2100;
+    // armConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -2100;
 
-    //Software Limits
+    // //Software Limits
     armConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     armConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     armConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.21;
     armConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.05;
 
     armConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+
 
     //Gearing
     armConfigs.Feedback.SensorToMechanismRatio = 133;
@@ -187,6 +205,13 @@ public class Arm extends SubsystemBase {
       System.out.println("Could not apply configs, error code: " + telescopestatus.toString());
     }
     
+    BaseStatusSignal.setUpdateFrequencyForAll(250, 
+    m_ArmLeftMotor.getPosition(),
+    m_ArmLeftMotor.getVelocity(),
+    m_ArmLeftMotor.getMotorVoltage());
+
+    m_ArmLeftMotor.optimizeBusUtilization();
+    SignalLogger.start();
 
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
@@ -197,6 +222,13 @@ public class Arm extends SubsystemBase {
 
     leftSim = m_ArmLeftMotor.getSimState();
     teleSim = m_TelescopeMotor.getSimState();
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
+    return m_sysidRoutine.quasistatic(direction);
+  }
+  public Command sysIdDynamic(SysIdRoutine.Direction direction){
+    return m_sysidRoutine.dynamic(direction);
   }
 
   public void setArmMotorOpenLoop(double Armoutput){
@@ -293,12 +325,8 @@ public class Arm extends SubsystemBase {
     return getArmPosition() < -0.03;
   }
 
-  public void setTargetScorePosition(Position pos){
-    currentTargetScoreState = pos;
-  }
-
   public void setArmtoScorePosition(double distance){
-    switch (currentTargetScoreState) {
+    switch (ScoringTarget.getTarget()) {
       case AMP:
         currentTargetArmPosition = Constants.Arm.AMP.rotArmSetpoint;
         currentTargetTelescopePosition = Constants.Arm.AMP.telescopeSetpoint;
@@ -309,6 +337,7 @@ public class Arm extends SubsystemBase {
       break;
       case RANGED:
       //Lookup Range in a TreeMap or 2?
+        //currentTargetArmPosition = Constants.Arm.armMap.get(distance);
       break;
     }
     setArmPosition(currentTargetArmPosition);
@@ -317,23 +346,23 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //This method will be called once per scheduler run
-    SmartDashboard.putNumber("Arm Motor Output", m_ArmLeftMotor.get());
-    SmartDashboard.putNumber("Telescope Motor Output", m_TelescopeMotor.get());
+    // //This method will be called once per scheduler run
+    // SmartDashboard.putNumber("Arm Motor Output", m_ArmLeftMotor.get());
+    // SmartDashboard.putNumber("Telescope Motor Output", m_TelescopeMotor.get());
 
-    SmartDashboard.putNumber("Arm Position", m_ArmLeftMotor.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("Telescope Position", m_TelescopeMotor.getPosition().getValueAsDouble());
+    // SmartDashboard.putNumber("Arm Position", m_ArmLeftMotor.getPosition().getValueAsDouble());
+    // SmartDashboard.putNumber("Telescope Position", m_TelescopeMotor.getPosition().getValueAsDouble());
 
-    SmartDashboard.putNumber("Arm Setpoint", this.getArmSetpoint());
-    SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
+    // SmartDashboard.putNumber("Arm Setpoint", this.getArmSetpoint());
+    // SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
 
-    SmartDashboard.putString("Arm Target Score Position", currentTargetScoreState.toString());
+    // SmartDashboard.putString("Arm Target Score Position", ScoringTarget.getTarget().toString());
 
-    SmartDashboard.putNumber("Arm Voltage", m_ArmLeftMotor.getMotorVoltage().getValue());
-    SmartDashboard.putNumber("Telescope Voltage", m_TelescopeMotor.getMotorVoltage().getValue());
+    // SmartDashboard.putNumber("Arm Voltage", m_ArmLeftMotor.getMotorVoltage().getValue());
+    // SmartDashboard.putNumber("Telescope Voltage", m_TelescopeMotor.getMotorVoltage().getValue());
 
-    SmartDashboard.putNumber("Arm Velocity", m_ArmLeftMotor.getVelocity().getValue());
-    SmartDashboard.putNumber("Telescope Veloctiy", m_TelescopeMotor.getVelocity().getValueAsDouble());
+    // SmartDashboard.putNumber("Arm Velocity", m_ArmLeftMotor.getVelocity().getValue());
+    // SmartDashboard.putNumber("Telescope Veloctiy", m_TelescopeMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

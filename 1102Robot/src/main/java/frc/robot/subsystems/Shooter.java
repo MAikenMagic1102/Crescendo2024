@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
@@ -44,6 +45,11 @@ public class Shooter extends SubsystemBase {
     TalonFXConfiguration shooterConfiguration = new TalonFXConfiguration();
 
     shooterConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    shooterConfiguration.Slot0.withKP(Constants.Shooter.kP);
+    shooterConfiguration.Slot0.withKS(Constants.Shooter.kS);
+    shooterConfiguration.Slot0.withKV(Constants.Shooter.kV);
+    shooterConfiguration.Slot0.withKA(Constants.Shooter.kA);
 
     TalonFXConfiguration Feederconfig = new TalonFXConfiguration();
 
@@ -105,7 +111,7 @@ public class Shooter extends SubsystemBase {
 
 
   public void ShooterStop(){
-    Shooter1.set(0.0);
+    Shooter1.setControl(new StaticBrake());
   }
 
   public void setShooterThrottle(double throttle){

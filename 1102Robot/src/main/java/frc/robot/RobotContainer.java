@@ -24,11 +24,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Arm.Arm;
-import frc.robot.subsystems.Arm.Arm.Position;
+import frc.robot.ScoringTarget.Position;
 import frc.robot.commands.*;
 
 public class RobotContainer {
@@ -79,11 +80,16 @@ public class RobotContainer {
 
     //shooter.setDefaultCommand(new FeederControl(shooter, joystick.leftBumper(), joystick.leftTrigger()));
 
-    arm.setDefaultCommand(new ArmControl(arm, () -> -joystick2.getRightY(), () -> -joystick2.getLeftY()));
+    //arm.setDefaultCommand(new ArmControl(arm, () -> -joystick2.getRightY(), () -> -joystick2.getLeftY()));
 
-    joystick2.a().onTrue(new InstantCommand(() -> arm.setTargetScorePosition(Position.SUBWOOFER)));
-    joystick2.b().onTrue(new InstantCommand(() -> arm.setTargetScorePosition(Position.AMP)));
+    // joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)));
+    // joystick2.b().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.AMP)));
     //joystick2.x().onTrue(new InstantCommand(() -> arm.setTargetScorePosition(Position.AMP)));
+
+    joystick2.y().whileTrue(arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    joystick2.a().whileTrue(arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    joystick2.b().whileTrue(arm.sysIdDynamic(SysIdRoutine.Direction.kForward)); 
+    joystick2.x().whileTrue(arm.sysIdDynamic(SysIdRoutine.Direction.kReverse)); 
 
     joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
     joystick.leftBumper().onFalse(new InstantCommand(() -> shooter.feederStop()).andThen(new ArmToStow(arm)));

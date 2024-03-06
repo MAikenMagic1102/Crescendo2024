@@ -11,6 +11,8 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.ScoringTarget;
+import frc.robot.ScoringTarget.Position;
 import frc.robot.subsystems.Shooter;
 
 public class ShooterControl extends Command {
@@ -52,7 +54,12 @@ public class ShooterControl extends Command {
       m_Shooter.feederStop();
     }
 
-    m_Shooter.setShooterThrottle(m_SpeedChooser.getSelected());
+    if(ScoringTarget.getTarget() == Position.AMP){
+      m_Shooter.setShooterThrottle(0.4);
+    }else{
+      m_Shooter.setShooterThrottle(m_SpeedChooser.getSelected());
+    }
+
   }
 
   // Called once the command ends or is interrupted.
