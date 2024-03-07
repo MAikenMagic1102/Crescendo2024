@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.38,
-      "y": 5.8
+      "x": 1.309243119380694,
+      "y": 5.521816553472107
     },
     "rotation": 0
   },
@@ -12,123 +12,323 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "sequential",
           "data": {
-            "pathName": "Right Note"
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "getShooterSpunUp"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "armToScore"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooterStop"
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Note"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeSetpoint"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "feederNoteIn"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.5
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "intakeSetpoint"
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "getShooterSpunUp"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "armToScore"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooterStop"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "getShooterSpunUp"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "feederNoteIn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle Note"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeSetpoint"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "getShooterSpunUp"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "feederNoteIn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeSetpoint"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "getShooterSpunUp"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle Note"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeSetpoint"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "feederNoteIn"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 5.0
+            "waitTime": 0.5
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "feederNoteIn"
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "getShooterSpunUp"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "armToScore"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooterStop"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "shootNote"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Note"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeSetpoint"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "feederNoteIn"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "getShooterSpunUp"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "armToScore"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooterStop"
+                }
+              }
+            ]
           }
         }
       ]

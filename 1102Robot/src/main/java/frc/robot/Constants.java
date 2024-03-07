@@ -34,10 +34,10 @@ public final class Constants {
         public static final double Shooter_kI = 0.0;
         public static final double Shooter_kD = 0.0;
 
-        public static final double kP = 0.3;
-        public static final double kS = 0.050223; // Amps
-        public static final double kV = 0.06486;
-        public static final double kA = 0.036428;
+        public static final double kP = 0.002;
+        //public static final double kS = 0.000465; // Amps
+        // public static final double kV = 0.0596;
+        // public static final double kA = 0.0204;
 
         public static final double Gear_Ratio = 84/74;
 
@@ -74,10 +74,10 @@ public final class Constants {
         public static final double kMaxAngleRads = Units.degreesToRadians(90);
 
         public static final double ArmExtendSafe = 0.015;
-        public static final ArmSetpoint INTAKE = new ArmSetpoint(-0.050, 1.82);
+        public static final ArmSetpoint INTAKE = new ArmSetpoint(-0.048, 1.79);
         public static final ArmSetpoint STOW = new ArmSetpoint(0.0, 0.1);
-        public static final ArmSetpoint AMP = new ArmSetpoint(0.17, 1.84);
-        public static final ArmSetpoint SUBWOOFER = new ArmSetpoint(-0.008, 0.920);
+        public static final ArmSetpoint AMP = new ArmSetpoint(0.17, 1.79);
+        public static final ArmSetpoint SUBWOOFER = new ArmSetpoint(-0.003, 0.920);
 
         public static InterpolatingTreeMap<Double,Double> armMap = new InterpolatingDoubleTreeMap();
         static {

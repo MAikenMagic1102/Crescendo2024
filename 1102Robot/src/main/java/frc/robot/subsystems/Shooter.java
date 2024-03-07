@@ -4,19 +4,32 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.Vision.Limelight;
+import frc.robot.subsystems.Vision.LimelightHelpers;
 
 public class Shooter extends SubsystemBase {
 
@@ -26,6 +39,21 @@ public class Shooter extends SubsystemBase {
   private PhoenixPIDController shooterPID;
 
   private VelocityVoltage shooterSpeed;
+
+  private final VoltageOut m_sysidControl = new VoltageOut(0.0);
+
+  private SysIdRoutine m_sysidRoutine = 
+    new SysIdRoutine(
+      new SysIdRoutine.Config(
+        Volts.of(0.5).per(Second), 
+        Volts.of(7), 
+        Seconds.of(15),
+        (state)->SignalLogger.writeString("shooterState", state.toString())), 
+      new SysIdRoutine.Mechanism(
+        (Measure<Voltage> volts)-> 
+          Shooter1.setControl(m_sysidControl.withOutput(volts.in(Volts))),
+        null, 
+        this));
   
   /** Creates a new Shooter. */
   public Shooter(){
@@ -47,9 +75,11 @@ public class Shooter extends SubsystemBase {
     shooterConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     shooterConfiguration.Slot0.withKP(Constants.Shooter.kP);
-    shooterConfiguration.Slot0.withKS(Constants.Shooter.kS);
-    shooterConfiguration.Slot0.withKV(Constants.Shooter.kV);
-    shooterConfiguration.Slot0.withKA(Constants.Shooter.kA);
+    // shooterConfiguration.Slot0.withKS(Constants.Shooter.kS);
+    // shooterConfiguration.Slot0.withKV(Constants.Shooter.kV);
+    // shooterConfiguration.Slot0.withKA(Constants.Shooter.kA);
+
+    shooterConfiguration.Feedback.SensorToMechanismRatio = Constants.Shooter.Gear_Ratio;
 
     TalonFXConfiguration Feederconfig = new TalonFXConfiguration();
 
@@ -75,13 +105,28 @@ public class Shooter extends SubsystemBase {
       System.out.println("Could not apply configs, error code: " + shooterStatus.toString());
     }
 
+    // BaseStatusSignal.setUpdateFrequencyForAll(250, 
+    // Shooter1.getPosition(),
+    // Shooter1.getVelocity(),
+    // Shooter1.getMotorVoltage());
+    // SignalLogger.start();
+
+
     Shooter2.setControl(new Follower(Constants.Shooter.Shooter1_ID, true));
     shooterSpeed = new VelocityVoltage(0);
   }
 
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
+    return m_sysidRoutine.quasistatic(direction);
+  }
+  public Command sysIdDynamic(SysIdRoutine.Direction direction){
+    return m_sysidRoutine.dynamic(direction);
+  }
+
+
   public void feederIn(){
     if(!noteSensor.get()){
-      Feeder.set(0.70);
+      Feeder.set(0.76);
     }else{
       Feeder.set(0);
     }
@@ -143,6 +188,11 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Speed", Shooter1.getVelocity().getValueAsDouble() * 60 * Constants.Shooter.Gear_Ratio );
     SmartDashboard.putBoolean("Note Senor", noteSensor.get());
     // SmartDashboard.putNumber("Feeder Speed", Feeder.getVelocity().getValueAsDouble());
+    if(noteSensor.get()){
+      LimelightHelpers.setLEDMode_ForceBlink("limelight-magic");
+    }else{
+      LimelightHelpers.setLEDMode_ForceOff("limelight-magic");
+    }
 
   }
 }

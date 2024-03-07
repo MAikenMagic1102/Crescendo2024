@@ -4,29 +4,38 @@
 
 package frc.robot.subsystems.Vision;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/** Add your docs here. */
-public class Limelight {
-NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-magic");
+public class Limelight extends SubsystemBase {
+  /** Creates a new Limelight. */
 
-//Degrees (vertical)
-double limelightMountAngleDegrees = 30.0;
-double limelightHeightInches = 10.01;
-double goalHeightInches = 60.0;
-    //first 6 lines
+  private double heightOfGoal = 57.13;
+  private double heightOfRobotCamera = 10;
+  private double cameraMountAngle = 30;
 
-    public double getDistance(){
-        NetworkTableEntry ty = table.getEntry("ty");
-        double targetOffsetAngle_Vertical = ty.getDouble(0.0);
-        double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
-        double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-        double distanceFromLimelightToGoalInches = (goalHeightInches - limelightHeightInches);
+  NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight-magic");
+  NetworkTableEntry ty = limelightTable.getEntry("ty");
 
 
+  public Limelight() {}
 
-        return distanceFromLimelightToGoalInches;
-    }
+  public double getLimelightDistance(){
+    double distance = 0.0;
+
+    double targetOffsetAngle_Vertical = Rotation2d.fromDegrees(30 + ty.getDouble(0.0)).getRadians();
+    distance = (heightOfGoal-heightOfRobotCamera) / Math.tan(targetOffsetAngle_Vertical);
+
+    return distance;
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Limelight distance", getLimelightDistance());
+    // This method will be called once per scheduler run
+  }
 }

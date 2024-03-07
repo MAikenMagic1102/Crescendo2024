@@ -15,6 +15,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
@@ -64,8 +65,10 @@ public class Arm extends SubsystemBase {
   private final DutyCycleOut telescopeOut = new DutyCycleOut(0);
 
   private final PositionTorqueCurrentFOC positionArmTQ = new PositionTorqueCurrentFOC(0);
+  private final MotionMagicExpoVoltage mm_ArmPosition = new MotionMagicExpoVoltage(0);
   //private final PositionTorqueCurrentFOC positionTeleTQ = new PositionTorqueCurrentFOC(0);
   private final PositionVoltage postitionTelescope = new PositionVoltage(0);
+  private final MotionMagicExpoVoltage mm_telePosition = new MotionMagicExpoVoltage(0);
 
   private boolean holdingArm = true;
   private boolean holdingTele = true;
@@ -151,6 +154,15 @@ public class Arm extends SubsystemBase {
     // // Peak output of 130 amps
     // armConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 2100;
     // armConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -2100;
+    armConfigs.Slot0.kS = 0.6;
+    armConfigs.Slot0.kV = 0;
+    armConfigs.Slot0.kG = 1.52;
+
+    armConfigs.Slot0.kP = 1100;
+    armConfigs.Slot0.kD = 30.00;
+
+    armConfigs.MotionMagic.MotionMagicCruiseVelocity = 0.2;
+
 
     // //Software Limits
     armConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -168,16 +180,25 @@ public class Arm extends SubsystemBase {
     TalonFXConfiguration teleConfigs = new TalonFXConfiguration();
 
     //PID Configs
-    teleConfigs.Slot0.kP = 30; // An error of 1 rotations results in 40 amps output
-    teleConfigs.Slot0.kD = 5; // A change of 1 rotation per second results in 2 amps output
+    // teleConfigs.Slot0.kP = 30; // An error of 1 rotations results in 40 amps output
+    // teleConfigs.Slot0.kD = 5; // A change of 1 rotation per second results in 2 amps output
     // Peak output of 130 amps
     // teleConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 500;
     // teleConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -600;
 
+    teleConfigs.Slot0.kS = 1.1;
+    teleConfigs.Slot0.kV = 0;
+    teleConfigs.Slot0.kG = 0;
+
+    teleConfigs.Slot0.kP = 150;
+    teleConfigs.Slot0.kD = 8;
+
+    teleConfigs.MotionMagic.MotionMagicCruiseVelocity = 0.4;
+
     //Software Limits
     teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     teleConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.84;
+    teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.8;
     teleConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
 
     teleConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -205,13 +226,13 @@ public class Arm extends SubsystemBase {
       System.out.println("Could not apply configs, error code: " + telescopestatus.toString());
     }
     
-    BaseStatusSignal.setUpdateFrequencyForAll(250, 
-    m_ArmLeftMotor.getPosition(),
-    m_ArmLeftMotor.getVelocity(),
-    m_ArmLeftMotor.getMotorVoltage());
+    // BaseStatusSignal.setUpdateFrequencyForAll(250, 
+    // m_ArmLeftMotor.getPosition(),
+    // m_ArmLeftMotor.getVelocity(),
+    // m_ArmLeftMotor.getMotorVoltage());
 
-    m_ArmLeftMotor.optimizeBusUtilization();
-    SignalLogger.start();
+    // m_ArmLeftMotor.optimizeBusUtilization();
+    //SignalLogger.start();
 
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
@@ -253,8 +274,8 @@ public class Arm extends SubsystemBase {
       //Do not try.
       this.setArmStop();
     }else{
-      positionArmTQ.withPosition(position).withFeedForward(10);
-      m_ArmLeftMotor.setControl(positionArmTQ);
+      mm_ArmPosition.withPosition(position);
+      m_ArmLeftMotor.setControl(mm_ArmPosition);
     }
 
   }
@@ -347,22 +368,22 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // //This method will be called once per scheduler run
-    // SmartDashboard.putNumber("Arm Motor Output", m_ArmLeftMotor.get());
-    // SmartDashboard.putNumber("Telescope Motor Output", m_TelescopeMotor.get());
+    SmartDashboard.putNumber("Arm Motor Output", m_ArmLeftMotor.get());
+    SmartDashboard.putNumber("Telescope Motor Output", m_TelescopeMotor.get());
 
-    // SmartDashboard.putNumber("Arm Position", m_ArmLeftMotor.getPosition().getValueAsDouble());
-    // SmartDashboard.putNumber("Telescope Position", m_TelescopeMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Arm Position", m_ArmLeftMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Telescope Position", m_TelescopeMotor.getPosition().getValueAsDouble());
 
-    // SmartDashboard.putNumber("Arm Setpoint", this.getArmSetpoint());
-    // SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
+    SmartDashboard.putNumber("Arm Setpoint", this.getArmSetpoint());
+    SmartDashboard.putNumber("Telescope Setpoint", this.getTelescopeSetpoint());
 
-    // SmartDashboard.putString("Arm Target Score Position", ScoringTarget.getTarget().toString());
+    SmartDashboard.putString("Arm Target Score Position", ScoringTarget.getTarget().toString());
 
-    // SmartDashboard.putNumber("Arm Voltage", m_ArmLeftMotor.getMotorVoltage().getValue());
-    // SmartDashboard.putNumber("Telescope Voltage", m_TelescopeMotor.getMotorVoltage().getValue());
+    SmartDashboard.putNumber("Arm Voltage", m_ArmLeftMotor.getMotorVoltage().getValue());
+    SmartDashboard.putNumber("Telescope Voltage", m_TelescopeMotor.getMotorVoltage().getValue());
 
-    // SmartDashboard.putNumber("Arm Velocity", m_ArmLeftMotor.getVelocity().getValue());
-    // SmartDashboard.putNumber("Telescope Veloctiy", m_TelescopeMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Arm Velocity", m_ArmLeftMotor.getVelocity().getValue());
+    SmartDashboard.putNumber("Telescope Veloctiy", m_TelescopeMotor.getVelocity().getValueAsDouble());
   }
 
   @Override
