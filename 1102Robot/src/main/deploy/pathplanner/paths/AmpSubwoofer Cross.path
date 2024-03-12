@@ -3,64 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.49,
-        "y": 2.7
+        "x": 1.2211290254423093,
+        "y": 6.314843398917567
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.275750948635836,
-        "y": 3.348335569651985
+        "x": 2.0288415532108353,
+        "y": 7.049127515070773
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.466377129937358,
-        "y": 4.017930289381706
+        "x": 2.6603258931025917,
+        "y": 6.212043622656119
       },
       "prevControl": {
-        "x": 4.452338629502069,
-        "y": 3.6557268670803893
+        "x": 1.9700988239185782,
+        "y": 6.226729304979184
       },
       "nextControl": {
-        "x": 6.346432156191684,
-        "y": 4.332276285303912
+        "x": 3.6004556061228485,
+        "y": 6.192040862804624
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.726886294559709,
-        "y": 4.141362415104079
+        "x": 7.903114482436479,
+        "y": 7.445640937793504
       },
       "prevControl": {
-        "x": 7.55065810668294,
-        "y": 4.508504473180682
-      },
-      "nextControl": {
-        "x": 7.887369550317412,
-        "y": 3.8070222989422002
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.49,
-        "y": 2.7
-      },
-      "prevControl": {
-        "x": 4.995349382465977,
-        "y": 4.493818790850986
+        "x": 7.345058554160042,
+        "y": 7.401583890824312
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.85,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -77,7 +67,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 33.690067525979785,
     "velocity": 0
   },
   "useDefaultConstraints": true

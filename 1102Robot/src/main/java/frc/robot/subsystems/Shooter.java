@@ -48,10 +48,10 @@ public class Shooter extends SubsystemBase {
         Volts.of(0.5).per(Second), 
         Volts.of(7), 
         Seconds.of(15),
-        (state)->SignalLogger.writeString("shooterState", state.toString())), 
+        (state)->SignalLogger.writeString("feederState", state.toString())), 
       new SysIdRoutine.Mechanism(
         (Measure<Voltage> volts)-> 
-          Shooter1.setControl(m_sysidControl.withOutput(volts.in(Volts))),
+          Feeder.setControl(m_sysidControl.withOutput(volts.in(Volts))),
         null, 
         this));
   
@@ -75,9 +75,9 @@ public class Shooter extends SubsystemBase {
     shooterConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     shooterConfiguration.Slot0.withKP(Constants.Shooter.kP);
-    // shooterConfiguration.Slot0.withKS(Constants.Shooter.kS);
-    // shooterConfiguration.Slot0.withKV(Constants.Shooter.kV);
-    // shooterConfiguration.Slot0.withKA(Constants.Shooter.kA);
+    shooterConfiguration.Slot0.withKS(Constants.Shooter.kS);
+    shooterConfiguration.Slot0.withKV(Constants.Shooter.kV);
+    shooterConfiguration.Slot0.withKA(Constants.Shooter.kA);
 
     shooterConfiguration.Feedback.SensorToMechanismRatio = Constants.Shooter.Gear_Ratio;
 
@@ -106,9 +106,9 @@ public class Shooter extends SubsystemBase {
     }
 
     // BaseStatusSignal.setUpdateFrequencyForAll(250, 
-    // Shooter1.getPosition(),
-    // Shooter1.getVelocity(),
-    // Shooter1.getMotorVoltage());
+    // Feeder.getPosition(),
+    // Feeder.getVelocity(),
+    // Feeder.getMotorVoltage());
     // SignalLogger.start();
 
 
@@ -126,7 +126,7 @@ public class Shooter extends SubsystemBase {
 
   public void feederIn(){
     if(!noteSensor.get()){
-      Feeder.set(0.76);
+      Feeder.set(0.78);
     }else{
       Feeder.set(0);
     }
@@ -136,9 +136,13 @@ public class Shooter extends SubsystemBase {
     Feeder.set(-0.5);
   }
 
+    public void feederOutSlow(){
+    Feeder.set(-0.1);
+  }
+
+
   public void feederStop(){
-    Feeder.set(0.0);
-    Feeder.setNeutralMode(NeutralModeValue.Brake);
+    Feeder.setControl(new StaticBrake());
   }
 
   public void feederShoot(boolean ready){
@@ -152,7 +156,11 @@ public class Shooter extends SubsystemBase {
 
     public void feederShootNow(){
       Feeder.set(0.8);
-  }
+    }
+
+    public void feederIndex(){
+      Feeder.set(0.3);
+    }
 
 
   public void ShooterStop(){
@@ -172,7 +180,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean getShooterReady(){
-    return Math.abs(Shooter1.getClosedLoopError().getValueAsDouble()) < 100;
+    return Math.abs(Shooter1.getClosedLoopError().getValueAsDouble()) < 3;
   }
 
   public boolean getIntakeHasNote(){
@@ -185,8 +193,17 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter Speed", Shooter1.getVelocity().getValueAsDouble() * 60 * Constants.Shooter.Gear_Ratio );
+    SmartDashboard.putNumber("Shooter Speed", Shooter1.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter Target", Shooter1.getClosedLoopReference().getValue());
+    SmartDashboard.putNumber("Shooter Error", Shooter1.getClosedLoopError().getValue());
+
+    SmartDashboard.putNumber("Feeder Speed", Feeder.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Feeder Target", Feeder.getClosedLoopReference().getValue());
+    SmartDashboard.putNumber("Feeder Error", Feeder.getClosedLoopError().getValue());
+
+    SmartDashboard.putBoolean("Shooter Ready", getShooterReady());
     SmartDashboard.putBoolean("Note Senor", noteSensor.get());
+
     // SmartDashboard.putNumber("Feeder Speed", Feeder.getVelocity().getValueAsDouble());
     if(noteSensor.get()){
       LimelightHelpers.setLEDMode_ForceBlink("limelight-magic");

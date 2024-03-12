@@ -4,21 +4,19 @@
 
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 
-public class AutoShooterCommand extends Command {
-  private Shooter m_Shooter;
+public class IntakeNote extends Command {
+  /** Creates a new IntakeNote. */
+  Shooter m_shooter;
   private boolean isFinished = false;
-  /** Creates a new AutoShooterCommand. */
-  public AutoShooterCommand(Shooter shooter) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_Shooter = shooter;
-    addRequirements(m_Shooter);
-  }
 
+  public IntakeNote(Shooter shooter) {
+    m_shooter = shooter;
+    addRequirements(shooter);
+    // Use addRequirements() here to declare subsystem dependencies.
+  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -29,10 +27,10 @@ public class AutoShooterCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_Shooter.setShooterSpeed(75);
-
-    if(m_Shooter.getShooterReady()){
+    if(m_shooter.getIntakeHasNote()){
       isFinished = true;
+    }else{
+      m_shooter.feederIn();
     }
   }
 

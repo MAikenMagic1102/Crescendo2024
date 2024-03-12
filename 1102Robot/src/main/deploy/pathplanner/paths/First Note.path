@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "3 Note Test",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

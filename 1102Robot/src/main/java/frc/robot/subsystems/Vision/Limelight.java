@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,11 +20,14 @@ public class Limelight extends SubsystemBase {
   private double heightOfRobotCamera = 10;
   private double cameraMountAngle = 30;
 
+  private boolean hasNotAppliedPrio = false;
+
   NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight-magic");
   NetworkTableEntry ty = limelightTable.getEntry("ty");
 
 
-  public Limelight() {}
+  public Limelight() {
+  }
 
   public double getLimelightDistance(){
     double distance = 0.0;
@@ -35,7 +40,21 @@ public class Limelight extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Limelight distance", getLimelightDistance());
-    // This method will be called once per scheduler run
+    try{
+      if ((!hasNotAppliedPrio || DriverStation.isDisabled())) {
+      if(DriverStation.getAlliance().get().equals(Alliance.Red)){
+        LimelightHelpers.setPriorityTagID("limelight-magic", 4);
+        hasNotAppliedPrio = true;
+      }
+
+      if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+        LimelightHelpers.setPriorityTagID("limelight-magic", 7);
+        hasNotAppliedPrio = true;
+      }
+      }
+    }catch(Exception e){
+      
+    }
+
   }
 }

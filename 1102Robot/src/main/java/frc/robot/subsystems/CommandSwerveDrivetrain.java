@@ -16,7 +16,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Vision.LimelightHelpers;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -117,7 +120,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
-            () -> DriverStation.getAlliance().orElse(Alliance.Blue)==Alliance.Red, // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if(alliance.isPresent()){
+                    return alliance.get() == DriverStation.Alliance.Red & !DriverStation.isTeleop();
+                }else{
+                    return false;
+                }
+            },
             this); // Subsystem for requirements
     }
 
@@ -127,6 +137,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command getAutoPath(String pathName) {
         return new PathPlannerAuto(pathName);
+    }
+
+    public void setFieldRelative(){
+        Translation2d trans = this.getState().Pose.getTranslation();
+      if(DriverStation.getAlliance().get().equals(Alliance.Red)){
+        this.seedFieldRelative(new Pose2d(trans, Rotation2d.fromDegrees(180)));
+      }
+
+      if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+        this.seedFieldRelative(new Pose2d(trans, Rotation2d.fromDegrees(0)));
+      }
     }
 
     /*
@@ -143,6 +164,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+    }
+    
+    public void setOpPerspective(){
+        hasAppliedOperatorPerspective = false;
     }
 
     private void startSimThread() {

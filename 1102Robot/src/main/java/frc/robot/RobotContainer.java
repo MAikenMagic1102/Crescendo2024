@@ -47,7 +47,7 @@ public class RobotContainer {
 
   private final Arm arm = new Arm();
 
-  Limelight vision = new Limelight();
+  //Limelight vision = new Limelight();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -55,15 +55,19 @@ public class RobotContainer {
   
   public RobotContainer() {
     configureBindings();
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     NamedCommands.registerCommand("armToScore", new Score(arm));
     NamedCommands.registerCommand("intakeSetpoint", new ArmToIntake(arm));
+    NamedCommands.registerCommand("stowArm", new ArmToStow(arm));
     NamedCommands.registerCommand("getShooterSpunUp", new AutoShooterCommand(shooter));
-    NamedCommands.registerCommand("feederNoteIn", new InstantCommand(() -> shooter.feederIn()));
+    NamedCommands.registerCommand("feederNoteIn", new IntakeNote(shooter));
     NamedCommands.registerCommand("shootNote", new InstantCommand(() -> shooter.feederShootNow()));
+    NamedCommands.registerCommand("feederStop", new InstantCommand(() -> shooter.feederStop()));
     NamedCommands.registerCommand("shooterStop", new InstantCommand(() -> shooter.ShooterStop()));
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.addOption("No Auto", null);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private void configureBindings() {
@@ -87,24 +91,31 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ArmControl(arm, () -> -joystick2.getRightY(), () -> -joystick2.getLeftY()));
 
-    //joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)));
-    //joystick2.b().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.AMP)));
-    //joystick2.x().onTrue(new InstantCommand(() -> arm.setTargetScorePosition(Position.AMP)));
+    joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)));
+    joystick2.b().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.AMP)));
+      // joystick2.a().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      // joystick2.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+      // joystick2.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      // joystick2.y().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
-    joystick2.y().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    joystick2.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    joystick2.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward)); 
-    joystick2.x().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)); 
 
-    joystick.povUp().whileTrue(new InstantCommand(() -> shooter.setShooterSpeed(4000)));
+     joystick.povUp().whileTrue(new InstantCommand(() -> shooter.setShooterSpeed(75)));
 
-    joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
+    //joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
+    //joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
+     joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new IntakeNote(shooter).andThen(new IntakeIndex(shooter))));
+
     joystick.leftBumper().onFalse(new InstantCommand(() -> shooter.feederStop()).andThen(new ArmToStow(arm)));
+
+    joystick.leftTrigger().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederOut())));
+    joystick.leftTrigger().onFalse(new InstantCommand(()-> shooter.feederStop()));
 
     joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new Score(arm)));
     joystick.rightTrigger().onFalse(new InstantCommand(() -> shooter.ShooterStop()).andThen(new ArmToStow(arm)));
+
+    
     // reset the field-centric heading on left bumper press
-    joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.setFieldRelative()));
 
     // if (Utils.isSimulation()) {
     //   drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -113,7 +124,7 @@ public class RobotContainer {
   } 
 
   public Command getAutonomousCommand() {
-      return new PathPlannerAuto("Optimized Test");
+      return autoChooser.getSelected();
    }
 
 

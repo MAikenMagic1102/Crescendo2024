@@ -57,7 +57,10 @@ public class ShooterControl extends Command {
     if(ScoringTarget.getTarget() == Position.AMP){
       m_Shooter.setShooterThrottle(0.4);
     }else{
-      m_Shooter.setShooterThrottle(m_SpeedChooser.getSelected());
+      if(ScoringTarget.getTarget() == Position.SUBWOOFER){
+        //m_Shooter.setShooterThrottle(0.75);
+      m_Shooter.setShooterSpeed(75.0);
+    }
     }
 
   }

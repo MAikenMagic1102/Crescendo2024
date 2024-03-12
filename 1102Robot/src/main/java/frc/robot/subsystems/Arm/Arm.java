@@ -14,6 +14,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -45,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.ScoringTarget;
+import frc.robot.ScoringTarget.Position;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
@@ -66,6 +68,7 @@ public class Arm extends SubsystemBase {
 
   private final PositionTorqueCurrentFOC positionArmTQ = new PositionTorqueCurrentFOC(0);
   private final MotionMagicExpoVoltage mm_ArmPosition = new MotionMagicExpoVoltage(0);
+
   //private final PositionTorqueCurrentFOC positionTeleTQ = new PositionTorqueCurrentFOC(0);
   private final PositionVoltage postitionTelescope = new PositionVoltage(0);
   private final MotionMagicExpoVoltage mm_telePosition = new MotionMagicExpoVoltage(0);
