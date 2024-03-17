@@ -17,16 +17,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Vision.Limelight;
 
 public class SwerveDriveControl extends Command {
   private CommandSwerveDrivetrain m_Swerve;
+  private Limelight m_Limelight;
   private double MaxSpeed = 6; // 6 meters per second desired top speed
   private double MaxAngularRate = 4 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   private DoubleSupplier xSup;
   private DoubleSupplier ySup;
   private DoubleSupplier rotationSup;
-  private BooleanSupplier m_halfSpeed;
+  private BooleanSupplier m_limelightAim;
   private BooleanSupplier m_quarterSpeed;
   private BooleanSupplier m_90, m_180, m_270, m_0;
   
@@ -35,19 +37,20 @@ public class SwerveDriveControl extends Command {
   private PhoenixPIDController m_thetaController;
   private SendableChooser<Double> m_speedChooser;
   private SwerveRequest m_Request;
-  private SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
+  private SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private SwerveRequest.FieldCentricFacingAngle driveAngle = new SwerveRequest.FieldCentricFacingAngle();
 
   /** Creates a new SwerveDriveControl. */
-  public SwerveDriveControl(CommandSwerveDrivetrain swerve, DoubleSupplier xSup, DoubleSupplier ySup, 
-                            DoubleSupplier rotationSup, BooleanSupplier halfSpeed, BooleanSupplier quarterSpeed,
+  public SwerveDriveControl(CommandSwerveDrivetrain swerve, Limelight limelight , DoubleSupplier xSup, DoubleSupplier ySup, 
+                            DoubleSupplier rotationSup, BooleanSupplier limelightAim, BooleanSupplier quarterSpeed,
                             BooleanSupplier zero, BooleanSupplier ninety, BooleanSupplier oneEighty, 
                             BooleanSupplier twoSeventy) {
     m_Swerve = swerve;
+    m_Limelight = limelight;
     this.ySup = ySup;
     this.xSup = xSup;
     this.rotationSup = rotationSup;
-    m_halfSpeed = halfSpeed;
+    m_limelightAim = limelightAim;
     m_quarterSpeed = quarterSpeed;
     m_0 = zero;
     m_90 = ninety;
@@ -103,9 +106,16 @@ public class SwerveDriveControl extends Command {
           .withVelocityY(xVal * MaxSpeed)
           .withTargetDirection(Rotation2d.fromDegrees(targetAngle));
     }else{
-      m_Request = drive.withVelocityX(yVal * MaxSpeed) // Drive forward with negative Y (forward)
+      if(m_limelightAim.getAsBoolean()){
+          m_Request = drive.withVelocityX(yVal * MaxSpeed) // Drive forward with negative Y (forward)
+          .withVelocityY(xVal * MaxSpeed) // Drive left with negative X (left)
+          .withRotationalRate(m_Limelight.aimToTag() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+      }else{
+          m_Request = drive.withVelocityX(yVal * MaxSpeed) // Drive forward with negative Y (forward)
           .withVelocityY(xVal * MaxSpeed) // Drive left with negative X (left)
           .withRotationalRate(rotationVal * MaxAngularRate); // Drive counterclockwise with negative X (left)
+      }
+
     }
 
     m_Swerve.setControl(m_Request);

@@ -23,10 +23,11 @@ public class ArmToStow extends SequentialCommandGroup {
       new ConditionalCommand(
         new InstantCommand(), 
         new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)), 
-        arm::isIntakeRetractSafe),
-      new WaitUntilCommand(arm::isIntakeRetractSafe),
+        arm::isIntakeExtendSafe),
+        
+      new WaitUntilCommand(arm::isIntakeExtendSafe),
       new InstantCommand(() -> arm.setTelescopePosition(Constants.Arm.STOW.telescopeSetpoint)),
-      new WaitUntilCommand(arm::isIntakeRetracted),
+      new WaitUntilCommand(arm::isIntakeFullyExtended),
       new InstantCommand(() -> arm.setArmPosition(Constants.Arm.STOW.rotArmSetpoint))
 
     );

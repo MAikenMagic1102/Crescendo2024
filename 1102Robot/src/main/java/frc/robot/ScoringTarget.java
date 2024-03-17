@@ -9,6 +9,7 @@ public class ScoringTarget {
     public enum Position{
         AMP,
         SUBWOOFER,
+        PODIUM,
         RANGED,
       };
     

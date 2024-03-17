@@ -67,7 +67,7 @@ public class Arm extends SubsystemBase {
   private final DutyCycleOut telescopeOut = new DutyCycleOut(0);
 
   private final PositionTorqueCurrentFOC positionArmTQ = new PositionTorqueCurrentFOC(0);
-  private final MotionMagicExpoVoltage mm_ArmPosition = new MotionMagicExpoVoltage(0);
+  private final DynamicMotionMagicVoltage mm_ArmPosition = new DynamicMotionMagicVoltage(0, 0.2, 2, 40);
 
   //private final PositionTorqueCurrentFOC positionTeleTQ = new PositionTorqueCurrentFOC(0);
   private final PositionVoltage postitionTelescope = new PositionVoltage(0);
@@ -157,14 +157,14 @@ public class Arm extends SubsystemBase {
     // // Peak output of 130 amps
     // armConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 2100;
     // armConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -2100;
-    armConfigs.Slot0.kS = 0.6;
-    armConfigs.Slot0.kV = 0;
-    armConfigs.Slot0.kG = 1.52;
+    armConfigs.Slot0.kA = 0.29;
+    armConfigs.Slot0.kV = 15.69;
+    armConfigs.Slot0.kG = 0.75;
 
     armConfigs.Slot0.kP = 1100;
     armConfigs.Slot0.kD = 30.00;
 
-    armConfigs.MotionMagic.MotionMagicCruiseVelocity = 0.2;
+    //armConfigs.MotionMagic.MotionMagicCruiseVelocity = 0.2;
 
 
     // //Software Limits
@@ -201,10 +201,10 @@ public class Arm extends SubsystemBase {
     //Software Limits
     teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     teleConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.8;
+    teleConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.95;
     teleConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
 
-    teleConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    teleConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         
     teleConfigs.Feedback.SensorToMechanismRatio = 25;
 
@@ -236,6 +236,8 @@ public class Arm extends SubsystemBase {
 
     // m_ArmLeftMotor.optimizeBusUtilization();
     //SignalLogger.start();
+    SmartDashboard.putNumber("Arm Ranged Test", 0.0);
+    currentTargetArmPosition = SmartDashboard.getNumber("Arm Ranged Test", Constants.Arm.SUBWOOFER.rotArmSetpoint);
 
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
@@ -278,13 +280,19 @@ public class Arm extends SubsystemBase {
       this.setArmStop();
     }else{
       mm_ArmPosition.withPosition(position);
+      if(ScoringTarget.getTarget() == Position.AMP){
+        mm_ArmPosition.withVelocity(0.35);
+      }else{
+        mm_ArmPosition.withVelocity(0.25);
+      }
       m_ArmLeftMotor.setControl(mm_ArmPosition);
     }
 
   }
 
   public void setArmStop(){
-    m_ArmLeftMotor.setControl(new StaticBrake());
+    //m_ArmLeftMotor.setControl(new StaticBrake());
+    m_ArmLeftMotor.set(0.0);
   }
 
   public void setTelescopePosition(double position){
@@ -326,19 +334,19 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isIntakeExtendSafe(){
-    return getArmPosition() > 0.01 || this.isIntakeFullyExtended();
+    return getArmPosition() > 0.004 || this.isIntakeFullyExtended();
   }
 
   public boolean isIntakeRetractSafe(){
-        return (getArmPosition() > 0.01 && getArmPosition() < 0.15) || this.isIntakeRetracted();
+        return (getArmPosition() > 0.004 && getArmPosition() < 0.15) || this.isIntakeRetracted();
   }
 
   public boolean isIntakeRetracted(){
-    return getTelescopePosition() < 1.0;
+    return getTelescopePosition() < 0.7;
   }
 
   public boolean isIntakeFullyExtended(){
-    return getTelescopePosition() > 1.62;
+    return getTelescopePosition() > 0.7;
   }
 
   public boolean isArmAtAmpPosition(){
@@ -362,6 +370,13 @@ public class Arm extends SubsystemBase {
       case RANGED:
       //Lookup Range in a TreeMap or 2?
         //currentTargetArmPosition = Constants.Arm.armMap.get(distance);
+        currentTargetArmPosition = SmartDashboard.getNumber("Arm Ranged Test", Constants.Arm.SUBWOOFER.rotArmSetpoint);
+        currentTargetTelescopePosition = Constants.Arm.SUBWOOFER.telescopeSetpoint;
+      break;
+      case PODIUM:
+      //100 inches?
+        currentTargetArmPosition = Constants.Arm.PODIUM.rotArmSetpoint;
+        currentTargetTelescopePosition = Constants.Arm.PODIUM.telescopeSetpoint;      
       break;
     }
     setArmPosition(currentTargetArmPosition);

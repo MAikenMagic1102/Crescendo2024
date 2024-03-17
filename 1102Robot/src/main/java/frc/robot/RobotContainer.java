@@ -47,7 +47,7 @@ public class RobotContainer {
 
   private final Arm arm = new Arm();
 
-  //Limelight vision = new Limelight();
+  Limelight vision = new Limelight();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -64,6 +64,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("shootNote", new InstantCommand(() -> shooter.feederShootNow()));
     NamedCommands.registerCommand("feederStop", new InstantCommand(() -> shooter.feederStop()));
     NamedCommands.registerCommand("shooterStop", new InstantCommand(() -> shooter.ShooterStop()));
+    NamedCommands.registerCommand("setPodium", new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)));
+    NamedCommands.registerCommand("indexNote", new IntakeIndex(shooter));
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("No Auto", null);
@@ -75,10 +77,11 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
       new SwerveDriveControl(
         drivetrain, 
+        vision,
         () -> -joystick.getLeftX(),  //Translation 
         () -> -joystick.getLeftY(),  //Translation
         () -> -joystick.getRightX(), //Rotation
-        joystick.povUp(), 
+        joystick.rightStick(), //Limelight Aim to Goal
         joystick.povDown(), 
         joystick.y(), //Face Forward
         joystick.b(), //Face Right
@@ -93,27 +96,27 @@ public class RobotContainer {
 
     joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)));
     joystick2.b().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.AMP)));
-      // joystick2.a().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      // joystick2.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-      // joystick2.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      // joystick2.y().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    joystick2.y().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.RANGED)));
+    joystick2.x().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)));
+      // joystick2.a().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      // joystick2.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+      // joystick2.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      // joystick2.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
-
-     joystick.povUp().whileTrue(new InstantCommand(() -> shooter.setShooterSpeed(75)));
+    //joystick.povUp().whileTrue(new InstantCommand(() -> shooter.setShooterSpeed(75)));
 
     //joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
     //joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
-     joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new IntakeNote(shooter).andThen(new IntakeIndex(shooter))));
+    joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new IntakeNote(shooter)));
 
-    joystick.leftBumper().onFalse(new InstantCommand(() -> shooter.feederStop()).andThen(new ArmToStow(arm)));
+    joystick.leftBumper().onFalse(new IntakeIndex(shooter).andThen(new ArmToStow(arm)));
 
-    joystick.leftTrigger().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederOut())));
+    joystick.leftTrigger().whileTrue(new Score(arm).andThen(new RunCommand(() -> shooter.feederOut())));
     joystick.leftTrigger().onFalse(new InstantCommand(()-> shooter.feederStop()));
 
     joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new Score(arm)));
     joystick.rightTrigger().onFalse(new InstantCommand(() -> shooter.ShooterStop()).andThen(new ArmToStow(arm)));
 
-    
     // reset the field-centric heading on left bumper press
     joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.setFieldRelative()));
 

@@ -23,7 +23,8 @@ public class ArmToIntake extends SequentialCommandGroup {
       new ConditionalCommand(
         new InstantCommand(), 
         new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)), 
-        arm::isIntakeExtendSafe),  
+        arm::isIntakeExtendSafe), 
+         
       new InstantCommand(() -> arm.setTelescopePosition(Constants.Arm.INTAKE.telescopeSetpoint)),
       new WaitUntilCommand(arm::isIntakeFullyExtended),
       new InstantCommand(() -> arm.setArmPosition(Constants.Arm.INTAKE.rotArmSetpoint))

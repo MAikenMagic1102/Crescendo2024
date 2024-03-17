@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Vision.LimelightHelpers;
+//import frc.robot.subsystems.Vision.LimelightHelpers;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -56,9 +56,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private SysIdRoutine SysIdRoutineTranslation = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null,
-                    Volts.of(4),
+                    Volts.of(7),
                     null,
-                    (state) -> SignalLogger.writeString("state", state.toString())),
+                    (state) -> SignalLogger.writeString("Translationstate", state.toString())),
             new SysIdRoutine.Mechanism(
                     (volts) -> setControl(TranslationCharacterization.withVolts(volts)),
                     null,
@@ -91,6 +91,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         configurePathPlanner();
+        SignalLogger.start();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -99,6 +100,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         configurePathPlanner();
+        SignalLogger.start();
         if (Utils.isSimulation()) {
             startSimThread();
         }

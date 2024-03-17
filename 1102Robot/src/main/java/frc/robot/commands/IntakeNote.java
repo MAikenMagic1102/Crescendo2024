@@ -28,6 +28,7 @@ public class IntakeNote extends Command {
   @Override
   public void execute() {
     if(m_shooter.getIntakeHasNote()){
+      m_shooter.feederStop();
       isFinished = true;
     }else{
       m_shooter.feederIn();

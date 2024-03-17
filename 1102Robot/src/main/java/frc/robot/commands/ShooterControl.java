@@ -11,6 +11,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.ScoringTarget;
 import frc.robot.ScoringTarget.Position;
 import frc.robot.subsystems.Shooter;
@@ -19,24 +20,14 @@ public class ShooterControl extends Command {
   private Shooter m_Shooter;
   private SendableChooser<Double> m_SpeedChooser;
   private BooleanSupplier m_feedNow;
+  private double shooterSpeed = 0.0;
   /** Creates a new ShooterControl. */
   public ShooterControl(Shooter shooter, BooleanSupplier feedNow){
     m_feedNow = feedNow;
     m_Shooter = shooter;
+    SmartDashboard.putNumber("Shooter Target Speed", 75.0);
+    shooterSpeed = SmartDashboard.getNumber("Shooter Target Speed", 75.0);
     addRequirements(m_Shooter);
-
-    m_SpeedChooser = new SendableChooser<Double>();
-    m_SpeedChooser.addOption("100%", 1.0);
-    m_SpeedChooser.addOption("90%", 0.9);
-    m_SpeedChooser.addOption("80%", 0.8);
-    m_SpeedChooser.addOption("70%", 0.7);
-    m_SpeedChooser.addOption("60%", 0.6);
-    m_SpeedChooser.addOption("50%", 0.5);
-    m_SpeedChooser.setDefaultOption("40%", 0.4);
-    m_SpeedChooser.addOption("30%", 0.3);
-    m_SpeedChooser.addOption("20%", 0.2);
-
-    SmartDashboard.putData("Shooter Throttle", m_SpeedChooser);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -48,19 +39,30 @@ public class ShooterControl extends Command {
   @Override
   public void execute() {
 
-    if(m_feedNow.getAsBoolean()){
+    if(m_feedNow.getAsBoolean() && m_Shooter.getShooterReady()){
       m_Shooter.feederShootNow();
     }else{
       m_Shooter.feederStop();
     }
 
+
+
     if(ScoringTarget.getTarget() == Position.AMP){
-      m_Shooter.setShooterThrottle(0.4);
+      m_Shooter.setShooterSpeed(40.0);
     }else{
       if(ScoringTarget.getTarget() == Position.SUBWOOFER){
         //m_Shooter.setShooterThrottle(0.75);
       m_Shooter.setShooterSpeed(75.0);
-    }
+      }else{
+        if(ScoringTarget.getTarget() == Position.PODIUM){
+          m_Shooter.setShooterSpeed(77.0);
+        }else{
+          if(ScoringTarget.getTarget() == Position.RANGED){
+            shooterSpeed = SmartDashboard.getNumber("Shooter Target Speed", 75.0);
+            m_Shooter.setShooterSpeed(shooterSpeed);
+          }          
+        }
+      }
     }
 
   }

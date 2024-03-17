@@ -180,7 +180,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean getShooterReady(){
-    return Math.abs(Shooter1.getClosedLoopError().getValueAsDouble()) < 3;
+    if(Shooter1.getClosedLoopReference().getValueAsDouble() == 0.0){
+      return false;
+    }else{
+      return Math.abs(Shooter1.getClosedLoopError().getValueAsDouble()) < 3;
+    }
   }
 
   public boolean getIntakeHasNote(){
