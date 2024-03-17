@@ -41,6 +41,7 @@ public class Shooter extends SubsystemBase {
   private VelocityVoltage shooterSpeed;
 
   private final VoltageOut m_sysidControl = new VoltageOut(0.0);
+  private boolean setFlashing = false;
 
   private SysIdRoutine m_sysidRoutine = 
     new SysIdRoutine(
@@ -55,8 +56,12 @@ public class Shooter extends SubsystemBase {
         null, 
         this));
   
+  CANdleSystem m_CaNdleSystem;
+        
   /** Creates a new Shooter. */
-  public Shooter(){
+  public Shooter(CANdleSystem candle){
+
+    m_CaNdleSystem = candle;
 
     Shooter1 = new TalonFX(Constants.Shooter.Shooter1_ID,Constants.canivoreBus);
     Shooter2 = new TalonFX(Constants.Shooter.Shooter2_ID,Constants.canivoreBus);
@@ -210,9 +215,13 @@ public class Shooter extends SubsystemBase {
 
     // SmartDashboard.putNumber("Feeder Speed", Feeder.getVelocity().getValueAsDouble());
     if(noteSensor.get()){
-      LimelightHelpers.setLEDMode_ForceBlink("limelight-magic");
+      if(!setFlashing){
+        m_CaNdleSystem.flashLEDs();
+        setFlashing = true;
+      }
     }else{
-      LimelightHelpers.setLEDMode_ForceOff("limelight-magic");
+      m_CaNdleSystem.stopflashLEDs();
+      setFlashing = false;
     }
 
   }

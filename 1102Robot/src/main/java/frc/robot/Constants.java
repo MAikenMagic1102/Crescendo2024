@@ -74,15 +74,22 @@ public final class Constants {
         public static final double kMaxAngleRads = Units.degreesToRadians(90);
 
         public static final double ArmExtendSafe = 0.005;
-        public static final ArmSetpoint INTAKE = new ArmSetpoint(-0.045, 0.9);
+        public static final ArmSetpoint INTAKE = new ArmSetpoint(-0.042, 0.9);
         public static final ArmSetpoint STOW = new ArmSetpoint(-0.03, 0.897);
         public static final ArmSetpoint AMP = new ArmSetpoint(0.17, 1.79);
         public static final ArmSetpoint SUBWOOFER = new ArmSetpoint(-0.008, 0.750);
-        public static final ArmSetpoint PODIUM = new ArmSetpoint(0.047, 0.750);
+        public static final ArmSetpoint PODIUM = new ArmSetpoint(0.053, 0.750);
+        public static final ArmSetpoint PRECLIMB = new ArmSetpoint(0.18, 1.8);
+        public static final ArmSetpoint CLIMB = new ArmSetpoint(0.01, 0.2);
+
 
         public static InterpolatingTreeMap<Double,Double> armMap = new InterpolatingDoubleTreeMap();
         static {
-            armMap.put(0.0, 0.0);
+            armMap.put(44.0, -0.008);
+            armMap.put(72.0, 0.03);
+            armMap.put(106.0, 0.055);
+            armMap.put(132.0, 0.0635);
+            armMap.put(166.0, 0.0724);
         }
 
         public static InterpolatingTreeMap<Double,Double> armMaxExtendMap = new InterpolatingDoubleTreeMap();

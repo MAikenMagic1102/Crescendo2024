@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CANdleSystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Arm.Arm;
@@ -43,7 +44,9 @@ public class RobotContainer {
   
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
-  private final Shooter shooter = new Shooter();
+  private final CANdleSystem candle = new CANdleSystem();
+
+  private final Shooter shooter = new Shooter(candle);
 
   private final Arm arm = new Arm();
 
@@ -94,14 +97,16 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ArmControl(arm, () -> -joystick2.getRightY(), () -> -joystick2.getLeftY()));
 
-    joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)));
-    joystick2.b().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.AMP)));
-    joystick2.y().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.RANGED)));
-    joystick2.x().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)));
+    joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)).andThen(new InstantCommand(() -> candle.setGreen())));
+    joystick2.b().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.AMP)).andThen(new InstantCommand(() -> candle.setBlue())));
+    joystick2.y().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.RANGED)).andThen(new InstantCommand(() -> candle.setRed())));
+    joystick2.x().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)).andThen(new InstantCommand(() -> candle.setPurple())));
       // joystick2.a().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
       // joystick2.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
       // joystick2.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
       // joystick2.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    joystick2.povUp().onTrue(new InstantCommand(() -> arm.preClimb()));
+    joystick2.povDown().onTrue(new InstantCommand(() -> arm.Climb()));
 
     //joystick.povUp().whileTrue(new InstantCommand(() -> shooter.setShooterSpeed(75)));
 
@@ -114,8 +119,8 @@ public class RobotContainer {
     joystick.leftTrigger().whileTrue(new Score(arm).andThen(new RunCommand(() -> shooter.feederOut())));
     joystick.leftTrigger().onFalse(new InstantCommand(()-> shooter.feederStop()));
 
-    joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new Score(arm)));
-    joystick.rightTrigger().onFalse(new InstantCommand(() -> shooter.ShooterStop()).andThen(new ArmToStow(arm)));
+    joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new ScoreControl(arm, vision)));
+    joystick.rightTrigger().onFalse(new InstantCommand(() -> shooter.ShooterStop()).andThen(new InstantCommand(() -> shooter.feederStop())).andThen(new ArmToStow(arm)));
 
     // reset the field-centric heading on left bumper press
     joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.setFieldRelative()));

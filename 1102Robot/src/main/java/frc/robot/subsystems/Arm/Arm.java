@@ -283,7 +283,7 @@ public class Arm extends SubsystemBase {
       if(ScoringTarget.getTarget() == Position.AMP){
         mm_ArmPosition.withVelocity(0.35);
       }else{
-        mm_ArmPosition.withVelocity(0.25);
+        mm_ArmPosition.withVelocity(0.2);
       }
       m_ArmLeftMotor.setControl(mm_ArmPosition);
     }
@@ -369,8 +369,8 @@ public class Arm extends SubsystemBase {
       break;
       case RANGED:
       //Lookup Range in a TreeMap or 2?
-        //currentTargetArmPosition = Constants.Arm.armMap.get(distance);
-        currentTargetArmPosition = SmartDashboard.getNumber("Arm Ranged Test", Constants.Arm.SUBWOOFER.rotArmSetpoint);
+        currentTargetArmPosition = Constants.Arm.armMap.get(distance);
+        // currentTargetArmPosition = SmartDashboard.getNumber("Arm Ranged Test", Constants.Arm.SUBWOOFER.rotArmSetpoint);
         currentTargetTelescopePosition = Constants.Arm.SUBWOOFER.telescopeSetpoint;
       break;
       case PODIUM:
@@ -381,6 +381,16 @@ public class Arm extends SubsystemBase {
     }
     setArmPosition(currentTargetArmPosition);
     setTelescopePosition(currentTargetTelescopePosition);
+  }
+
+  public void preClimb(){
+    setArmPosition(Constants.Arm.PRECLIMB.rotArmSetpoint);
+    setTelescopePosition(Constants.Arm.PRECLIMB.telescopeSetpoint);
+  }
+
+    public void Climb(){
+    setArmPosition(Constants.Arm.CLIMB.rotArmSetpoint);
+    setTelescopePosition(Constants.Arm.CLIMB.telescopeSetpoint);
   }
 
   @Override

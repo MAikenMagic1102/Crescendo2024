@@ -247,25 +247,19 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "indexNote"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "armToScore"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Left Note Score"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armToScore"
                 }
               },
               {
