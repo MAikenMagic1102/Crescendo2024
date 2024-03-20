@@ -283,7 +283,7 @@ public class Arm extends SubsystemBase {
       if(ScoringTarget.getTarget() == Position.AMP){
         mm_ArmPosition.withVelocity(0.35);
       }else{
-        mm_ArmPosition.withVelocity(0.2);
+        mm_ArmPosition.withVelocity(0.23);
       }
       m_ArmLeftMotor.setControl(mm_ArmPosition);
     }
@@ -331,6 +331,10 @@ public class Arm extends SubsystemBase {
 
   public boolean getTeleHolding(){
     return holdingTele;
+  }
+
+  public boolean isArmAboveBumper(){
+    return getArmPosition() > 0.004;
   }
 
   public boolean isIntakeExtendSafe(){
@@ -388,9 +392,13 @@ public class Arm extends SubsystemBase {
     setTelescopePosition(Constants.Arm.PRECLIMB.telescopeSetpoint);
   }
 
-    public void Climb(){
+  public void Climb(){
     setArmPosition(Constants.Arm.CLIMB.rotArmSetpoint);
     setTelescopePosition(Constants.Arm.CLIMB.telescopeSetpoint);
+  }
+
+  public void ArmToSafeExtend(){
+    setArmPosition(Constants.Arm.ArmExtendSafe);
   }
 
   @Override

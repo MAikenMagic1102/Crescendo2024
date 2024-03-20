@@ -4,31 +4,27 @@
 
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.ScoringTarget;
-import frc.robot.ScoringTarget.Position;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Vision.Limelight;
 
-public class ScoreControl extends Command {
-  private Arm arm;
-  private Limelight limelight;
+public class AutoAimToSpeaker extends Command {
+
+  private Limelight vision;
   private boolean isFinished = false;
-  /** Creates a new ShooterControl. */
-  public ScoreControl(Arm m_arm, Limelight m_limelight){
-    arm = m_arm;
-    limelight = m_limelight;
-    addRequirements(arm);
+  private SwerveRequest m_Request;
+  private SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+
+  /** Creates a new AutoAimToSpeaker. */
+  public AutoAimToSpeaker(Limelight limelight) {
+    vision = limelight;
+    addRequirements(vision);
     // Use addRequirements() here to declare subsystem dependencies.
   }
+
 
   // Called when the command is initially scheduled.
   @Override
@@ -39,10 +35,13 @@ public class ScoreControl extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(!arm.isArmAboveBumper()){
-      arm.setArmPosition(Constants.Arm.ArmExtendSafe);
+    
+    if(vision.isAimedAtSpeaker()){
+      isFinished = true; 
     }else{
-      arm.setArmtoScorePosition(limelight.getLimelightDistance());
+    m_Request = drive.withVelocityX(0) 
+    .withVelocityY(0) 
+    .withRotationalRate(vision.aimToTag()); 
     }
   }
 

@@ -42,18 +42,23 @@ public class Limelight extends SubsystemBase {
   }
 
   public double aimToTag(){
-    
-
+  
       double heading_error = -tx.getDouble(0.0);
       double steering_adjust = heading_error * Constants.Limelight.limelight_kP;
 
       return steering_adjust;
-    }
+  }
+
+  public boolean isAimedAtSpeaker(){
+    double m_tx = Math.abs(tx.getDouble(0.0));
+    return m_tx > 0.0 && m_tx < 0.1;
+  }
 
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Distance To Goal", getLimelightDistance());
+    SmartDashboard.putNumber("TX Value", tx.getDouble(0.0));
 
     try{
       if ((!hasNotAppliedPrio || DriverStation.isDisabled())) {
