@@ -68,7 +68,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("feederStop", new InstantCommand(() -> shooter.feederStop()));
     NamedCommands.registerCommand("shooterStop", new InstantCommand(() -> shooter.ShooterStop()));
     NamedCommands.registerCommand("setPodium", new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)));
-    NamedCommands.registerCommand("indexNote", new IntakeIndex(shooter));
+    NamedCommands.registerCommand("indexNote", new IntakeIndex(shooter, candle));
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("No Auto", null);
@@ -97,7 +97,7 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ArmControl(arm, () -> -joystick2.getRightY(), () -> -joystick2.getLeftY()));
 
-    joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)).andThen(new InstantCommand(() -> candle.setGreen())));
+    joystick2.a().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)).andThen(new InstantCommand(() -> candle.setWhite())));
     joystick2.b().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.AMP)).andThen(new InstantCommand(() -> candle.setBlue())));
     joystick2.y().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.RANGED)).andThen(new InstantCommand(() -> candle.setRed())));
     joystick2.x().onTrue(new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)).andThen(new InstantCommand(() -> candle.setPurple())));
@@ -105,21 +105,20 @@ public class RobotContainer {
       // joystick2.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
       // joystick2.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
       // joystick2.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    joystick2.povUp().onTrue(new InstantCommand(() -> arm.preClimb()));
-    joystick2.povDown().onTrue(new InstantCommand(() -> arm.Climb()));
+    joystick2.povUp().onTrue(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new InstantCommand(() -> arm.preClimb())));
+    joystick2.povDown().onTrue(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new InstantCommand(() -> arm.Climb())));
 
     //joystick.povUp().whileTrue(new InstantCommand(() -> shooter.setShooterSpeed(75)));
 
     //joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
     //joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new RunCommand(() -> shooter.feederIn())));
-    joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new IntakeNote(shooter)));
-
-    joystick.leftBumper().onFalse(new IntakeIndex(shooter).andThen(new ArmToStow(arm)));
+    joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new IntakeNote(shooter).andThen(new NoteSignal(candle))));
+    joystick.leftBumper().onFalse(new IntakeIndex(shooter, candle).andThen(new ArmToStow(arm)));
 
     joystick.leftTrigger().whileTrue(new Score(arm).andThen(new RunCommand(() -> shooter.feederOut())));
     joystick.leftTrigger().onFalse(new InstantCommand(()-> shooter.feederStop()));
 
-    joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new ScoreControl(arm, vision)));
+    joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new ScoreControl(arm, vision))));
     joystick.rightTrigger().onFalse(new InstantCommand(() -> shooter.ShooterStop()).andThen(new InstantCommand(() -> shooter.feederStop())).andThen(new ArmToStow(arm)));
 
     // reset the field-centric heading on left bumper press

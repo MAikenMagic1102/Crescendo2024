@@ -214,15 +214,15 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putBoolean("Note Senor", noteSensor.get());
 
     // SmartDashboard.putNumber("Feeder Speed", Feeder.getVelocity().getValueAsDouble());
-    if(noteSensor.get()){
-      if(!setFlashing){
-        m_CaNdleSystem.flashLEDs();
-        setFlashing = true;
-      }
-    }else{
-      m_CaNdleSystem.stopflashLEDs();
-      setFlashing = false;
-    }
+    // if(noteSensor.get()){
+    //   if(!setFlashing){
+    //     m_CaNdleSystem.setGreen();
+    //     setFlashing = true;
+    //   }
+    // }else{
+    //   m_CaNdleSystem.setChange();
+    //   setFlashing = false;
+    // }
 
   }
 }
