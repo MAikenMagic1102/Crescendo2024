@@ -1,0 +1,405 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.5740411480822979,
+      "y": 4.17371680897208
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Vision Source Preload"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "getShooterSpunUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "setRanged"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "VisionarmToScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoAimToSpeaker"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootNote"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterStop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederStop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSetpoint"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "To Frogarty"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "feederNoteIn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutocollectNote"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Frogarty Return to Shoot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "indexNote"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "getShooterSpunUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoAimToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "VisionarmToScore"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootNote"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterStop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederStop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSetpoint"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "To Madison"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "feederNoteIn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutocollectNote"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Madison Return to Shoot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "indexNote"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "getShooterSpunUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "VisionarmToScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoAimToSpeaker"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootNote"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterStop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederStop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSetpoint"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "To Russ"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "feederNoteIn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutocollectNote"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Russ Return To Shoot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "indexNote"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "getShooterSpunUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoAimToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "VisionarmToScore"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootNote"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterStop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederStop"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Completed Paths",
+  "choreoAuto": false
+}

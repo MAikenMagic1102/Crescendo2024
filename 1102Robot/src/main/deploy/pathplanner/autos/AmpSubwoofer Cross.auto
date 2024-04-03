@@ -72,9 +72,34 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "AmpSubwoofer Cross"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSetpoint"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "AmpSubwoofer Cross"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "feederNoteIn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederStop"
           }
         }
       ]

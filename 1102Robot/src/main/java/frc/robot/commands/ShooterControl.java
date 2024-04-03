@@ -15,14 +15,17 @@ import frc.robot.Constants;
 import frc.robot.ScoringTarget;
 import frc.robot.ScoringTarget.Position;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Vision.Limelight;
 
 public class ShooterControl extends Command {
   private Shooter m_Shooter;
   private SendableChooser<Double> m_SpeedChooser;
   private BooleanSupplier m_feedNow;
   private double shooterSpeed = 0.0;
+  private Limelight limelight;
   /** Creates a new ShooterControl. */
-  public ShooterControl(Shooter shooter, BooleanSupplier feedNow){
+  public ShooterControl(Shooter shooter, BooleanSupplier feedNow, Limelight m_limelight){
+    limelight = m_limelight;
     m_feedNow = feedNow;
     m_Shooter = shooter;
     SmartDashboard.putNumber("Shooter Target Speed", 75.0);
@@ -48,7 +51,7 @@ public class ShooterControl extends Command {
 
 
     if(ScoringTarget.getTarget() == Position.AMP){
-      m_Shooter.setShooterSpeed(40.0);
+      m_Shooter.setShooterSpeed(10.0);
     }else{
       if(ScoringTarget.getTarget() == Position.SUBWOOFER){
         //m_Shooter.setShooterThrottle(0.75);
@@ -58,7 +61,8 @@ public class ShooterControl extends Command {
           m_Shooter.setShooterSpeed(77.0);
         }else{
           if(ScoringTarget.getTarget() == Position.RANGED){
-            shooterSpeed = SmartDashboard.getNumber("Shooter Target Speed", 75.0);
+            //shooterSpeed = SmartDashboard.getNumber("Shooter Target Speed", 75.0);
+            shooterSpeed = Constants.Shooter.shooterMap.get(limelight.getLimelightDistance());
             m_Shooter.setShooterSpeed(shooterSpeed);
           }          
         }

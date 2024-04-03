@@ -22,9 +22,9 @@ public class IntakeIndex extends SequentialCommandGroup {
     addRequirements(shooter);
     addCommands(
       new InstantCommand(() -> shooter.feederIndex()),
-      new WaitCommand(0.1),
+      new WaitCommand(0.05),
 
-      new InstantCommand(() -> shooter.setShooterThrottle(-0.1 )),
+      new InstantCommand(() -> shooter.setShooterThrottle(-0.12 )),
       new InstantCommand(() -> shooter.feederOutSlow()),
       new WaitCommand(0.1),
       

@@ -3,57 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 1.36,
+        "y": 3.37
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1770719784796662,
-        "y": 7.32815547920567
+        "x": 5.259375354135326,
+        "y": 1.4011058791348356
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.895296810271618,
-        "y": 7.0
+        "x": 7.323030030675447,
+        "y": 1.006428166702488
       },
       "prevControl": {
-        "x": 2.8952968102349423,
-        "y": 6.97160628875679
+        "x": 6.977687032297143,
+        "y": 0.7498876536214618
       },
       "nextControl": {
-        "x": 2.8952968102781673,
-        "y": 7.005070468098259
+        "x": 7.483214811354653,
+        "y": 1.1254225752070413
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.895296810271618,
-        "y": 5.5658736004379765
+        "x": 7.540102772513238,
+        "y": 2.43
       },
       "prevControl": {
-        "x": 2.9185169128357886,
-        "y": 5.5426534978634505
+        "x": 7.3131630878646385,
+        "y": 2.3285985033508547
       },
       "nextControl": {
-        "x": 2.8806111279551025,
-        "y": 5.580559282761041
+        "x": 7.5815658780812525,
+        "y": 2.448526600875596
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.895296810271618,
-        "y": 4.126676732777694
+        "x": 7.96,
+        "y": 2.43
       },
       "prevControl": {
-        "x": 2.8952968102781673,
-        "y": 4.082619685808502
+        "x": 7.7154457708915425,
+        "y": 2.466735702702175
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,8 +64,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.8,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -75,7 +75,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "folder": "Madison",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
 }

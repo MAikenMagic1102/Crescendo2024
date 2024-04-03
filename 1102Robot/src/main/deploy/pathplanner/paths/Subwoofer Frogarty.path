@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.43,
+        "y": 4.9
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.178914050135794,
+        "y": 0.927492624216019
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.606181981594733,
+        "y": 4.09478126648561
+      },
+      "prevControl": {
+        "x": 4.333346359000412,
+        "y": 3.7593052109181144
+      },
+      "nextControl": {
+        "x": 6.762586604059342,
+        "y": 4.39957008170884
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.13,
+        "y": 4.1
+      },
+      "prevControl": {
+        "x": 7.301176803892072,
+        "y": 4.139467771243235
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.8,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Frogarty",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

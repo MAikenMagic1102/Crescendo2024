@@ -64,12 +64,30 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "intakeSetpoint"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "Crossing the Line"
+                  "pathName": "Midwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "feederNoteIn"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederStop"
           }
         }
       ]

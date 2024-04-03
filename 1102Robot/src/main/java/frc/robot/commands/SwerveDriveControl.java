@@ -37,7 +37,7 @@ public class SwerveDriveControl extends Command {
   private PhoenixPIDController m_thetaController;
   private SendableChooser<Double> m_speedChooser;
   private SwerveRequest m_Request;
-  private SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.Velocity);
   private SwerveRequest.FieldCentricFacingAngle driveAngle = new SwerveRequest.FieldCentricFacingAngle();
 
   /** Creates a new SwerveDriveControl. */
@@ -74,7 +74,7 @@ public class SwerveDriveControl extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_thetaController = new PhoenixPIDController(5.0, 0.0, 0.0);
+    m_thetaController = new PhoenixPIDController(8.0, 0.0, 0.0);
     m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     driveAngle.HeadingController = m_thetaController;
   }
@@ -82,11 +82,14 @@ public class SwerveDriveControl extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     boolean rotateWithButton = m_0.getAsBoolean() || m_90.getAsBoolean() || m_180.getAsBoolean() || m_270.getAsBoolean();
 
     xVal = MathUtil.applyDeadband(xSup.getAsDouble() * m_speedChooser.getSelected(), 0.1);
     yVal = MathUtil.applyDeadband(ySup.getAsDouble() * m_speedChooser.getSelected(), 0.1);
     rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble() * m_speedChooser.getSelected(), 0.1);
+
+    SmartDashboard.putNumber("Y Controller Val", yVal);
 
     if(rotateWithButton){
       if(m_0.getAsBoolean()){

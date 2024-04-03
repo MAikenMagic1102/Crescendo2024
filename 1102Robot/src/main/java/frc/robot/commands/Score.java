@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Arm.Arm;
 
@@ -19,16 +20,16 @@ import frc.robot.subsystems.Arm.Arm;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Score extends SequentialCommandGroup {
   /** Creates a new Score. */
-  public Score(Arm arm) {
+  public Score(Arm arm, Limelight vision) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addRequirements(arm);
+    addRequirements(arm, vision);
     addCommands(
       new ConditionalCommand(
         new InstantCommand(), 
         new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)), 
         arm::isIntakeRetractSafe),
-      new InstantCommand(() -> arm.setArmtoScorePosition(0))
+      new InstantCommand(() -> arm.setArmtoScorePosition(vision.getLimelightDistance()))
     );
   }
 }

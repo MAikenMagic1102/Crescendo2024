@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Left Note",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

@@ -169,7 +169,8 @@ public class Shooter extends SubsystemBase {
 
 
   public void ShooterStop(){
-    Shooter1.setControl(new StaticBrake());
+    setShooterSpeed(0.0);
+  //  Shooter1.setControl(new StaticBrake());
   }
 
   public void setShooterThrottle(double throttle){

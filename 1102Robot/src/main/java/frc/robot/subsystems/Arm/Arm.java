@@ -75,6 +75,7 @@ public class Arm extends SubsystemBase {
 
   private boolean holdingArm = true;
   private boolean holdingTele = true;
+  private boolean climbing = false;
 
   private double currentTargetArmPosition = 0.0;
   private double currentTargetTelescopePosition = 0.0;
@@ -170,8 +171,8 @@ public class Arm extends SubsystemBase {
     // //Software Limits
     armConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     armConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    armConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.21;
-    armConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.05;
+    armConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.23;
+    armConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -0.06;
 
     armConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
@@ -193,7 +194,7 @@ public class Arm extends SubsystemBase {
     teleConfigs.Slot0.kV = 0;
     teleConfigs.Slot0.kG = 0;
 
-    teleConfigs.Slot0.kP = 150;
+    teleConfigs.Slot0.kP = 140;
     teleConfigs.Slot0.kD = 8;
 
     teleConfigs.MotionMagic.MotionMagicCruiseVelocity = 0.4;
@@ -275,7 +276,7 @@ public class Arm extends SubsystemBase {
 
   public void setArmPosition(double position){
     holdingArm = true;
-    if(position < -0.02 && !this.isIntakeFullyExtended()){
+    if(position < -0.02 && !this.isIntakeFullyExtended() && !climbing){
       //Do not try.
       this.setArmStop();
     }else{
@@ -361,6 +362,10 @@ public class Arm extends SubsystemBase {
     return getArmPosition() < -0.03;
   }
 
+  public boolean isArmClimbed(){
+    return getArmPosition() < 0.0005;
+  }
+
   public void setArmtoScorePosition(double distance){
     switch (ScoringTarget.getTarget()) {
       case AMP:
@@ -374,7 +379,7 @@ public class Arm extends SubsystemBase {
       case RANGED:
       //Lookup Range in a TreeMap or 2?
         currentTargetArmPosition = Constants.Arm.armMap.get(distance);
-        // currentTargetArmPosition = SmartDashboard.getNumber("Arm Ranged Test", Constants.Arm.SUBWOOFER.rotArmSetpoint);
+        //currentTargetArmPosition = SmartDashboard.getNumber("Arm Ranged Test", Constants.Arm.SUBWOOFER.rotArmSetpoint);
         currentTargetTelescopePosition = Constants.Arm.SUBWOOFER.telescopeSetpoint;
       break;
       case PODIUM:
@@ -388,11 +393,13 @@ public class Arm extends SubsystemBase {
   }
 
   public void preClimb(){
+    climbing = true;
     setArmPosition(Constants.Arm.PRECLIMB.rotArmSetpoint);
     setTelescopePosition(Constants.Arm.PRECLIMB.telescopeSetpoint);
   }
 
   public void Climb(){
+    climbing = true;
     setArmPosition(Constants.Arm.CLIMB.rotArmSetpoint);
     setTelescopePosition(Constants.Arm.CLIMB.telescopeSetpoint);
   }

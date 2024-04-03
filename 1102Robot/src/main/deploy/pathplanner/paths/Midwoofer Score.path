@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.27,
+        "y": 0.77
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.500635001265595,
+        "y": 0.6709521111293838
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.7807975615951244,
+        "y": 1.4504405931888795
+      },
+      "prevControl": {
+        "x": 5.416350112838808,
+        "y": 0.6837753347934036
+      },
+      "nextControl": {
+        "x": 2.517828881811611,
+        "y": 2.042457161837401
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.43,
+        "y": 4.9
+      },
+      "prevControl": {
+        "x": 1.8900701432128035,
+        "y": 3.9725073757783744
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.8,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -24.75372567651152,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "RussArray",
+  "previewStartingState": {
+    "rotation": -1.4498304197795548,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

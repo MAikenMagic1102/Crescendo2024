@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ArmLatch;
 import frc.robot.subsystems.CANdleSystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
@@ -52,6 +53,8 @@ public class RobotContainer {
 
   Limelight vision = new Limelight();
 
+  private ArmLatch latch = new ArmLatch();
+
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final SendableChooser<Command> autoChooser;  
@@ -59,16 +62,23 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    NamedCommands.registerCommand("armToScore", new Score(arm));
+    NamedCommands.registerCommand("armToScore", new Score(arm, vision));
     NamedCommands.registerCommand("intakeSetpoint", new ArmToIntake(arm));
     NamedCommands.registerCommand("stowArm", new ArmToStow(arm));
-    NamedCommands.registerCommand("getShooterSpunUp", new AutoShooterCommand(shooter));
-    NamedCommands.registerCommand("feederNoteIn", new IntakeNote(shooter));
+    NamedCommands.registerCommand("getShooterSpunUp", new AutoShooterCommand(shooter).withTimeout(0.5));
+    NamedCommands.registerCommand("getShooterSpunUpFar", new AutoShooterCommandFar(shooter));
+    NamedCommands.registerCommand("feederNoteIn", new IntakeNote(shooter).withTimeout(0.5));
     NamedCommands.registerCommand("shootNote", new InstantCommand(() -> shooter.feederShootNow()));
     NamedCommands.registerCommand("feederStop", new InstantCommand(() -> shooter.feederStop()));
     NamedCommands.registerCommand("shooterStop", new InstantCommand(() -> shooter.ShooterStop()));
-    NamedCommands.registerCommand("setPodium", new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)));
-    NamedCommands.registerCommand("indexNote", new IntakeIndex(shooter, candle));
+    NamedCommands.registerCommand("setPodium", new InstantCommand(() -> ScoringTarget.setTarget(Position.PODIUM)).andThen(new InstantCommand(() -> candle.setPurple())));
+    NamedCommands.registerCommand("setSubwoofer", new InstantCommand(() -> ScoringTarget.setTarget(Position.SUBWOOFER)).andThen(new InstantCommand(() -> candle.setWhite())));
+    NamedCommands.registerCommand("setRanged", new InstantCommand(() -> ScoringTarget.setTarget(Position.RANGED)).andThen(new InstantCommand(() -> candle.setRed()))); 
+    NamedCommands.registerCommand("indexNote", new AutoIntakeIndex(shooter, candle));
+    NamedCommands.registerCommand("VisionarmToScore", new AutoScoreControl(arm, vision).withTimeout(0.5));
+    NamedCommands.registerCommand("autoAimToSpeaker", new AutoAimToSpeaker(vision, drivetrain).withTimeout(0.5));
+    NamedCommands.registerCommand("AutocollectNote", new AutoCollectNote(drivetrain, shooter, vision));
+
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("No Auto", null);
@@ -105,8 +115,11 @@ public class RobotContainer {
       // joystick2.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
       // joystick2.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
       // joystick2.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    joystick2.povUp().onTrue(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new InstantCommand(() -> arm.preClimb())));
-    joystick2.povDown().onTrue(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new InstantCommand(() -> arm.Climb())));
+    joystick2.povUp().onTrue(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new PreClimb(arm)));
+    joystick2.povDown().onTrue(new Climb(arm, latch));
+
+    joystick2.start().onTrue(new InstantCommand(() -> latch.fire())); //plus
+    joystick2.back().onTrue(new InstantCommand(() -> latch.home()));
 
     //joystick.povUp().whileTrue(new InstantCommand(() -> shooter.setShooterSpeed(75)));
 
@@ -115,10 +128,10 @@ public class RobotContainer {
     joystick.leftBumper().whileTrue(new ArmToIntake(arm).andThen(new IntakeNote(shooter).andThen(new NoteSignal(candle))));
     joystick.leftBumper().onFalse(new IntakeIndex(shooter, candle).andThen(new ArmToStow(arm)));
 
-    joystick.leftTrigger().whileTrue(new Score(arm).andThen(new RunCommand(() -> shooter.feederOut())));
+    joystick.leftTrigger().whileTrue(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new RunCommand(() -> shooter.feederOut())));
     joystick.leftTrigger().onFalse(new InstantCommand(()-> shooter.feederStop()));
 
-    joystick.rightTrigger().whileTrue(new ShooterControl(shooter, joystick.rightBumper()).alongWith(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new ScoreControl(arm, vision))));
+    joystick.rightTrigger().whileTrue(new InstantCommand(() -> candle.setChange()).andThen(new ShooterControl(shooter, joystick.rightBumper(), vision).alongWith(new InstantCommand(() -> arm.setArmPosition(Constants.Arm.ArmExtendSafe)).andThen(new ScoreControl(arm, vision)))));
     joystick.rightTrigger().onFalse(new InstantCommand(() -> shooter.ShooterStop()).andThen(new InstantCommand(() -> shooter.feederStop())).andThen(new ArmToStow(arm)));
 
     // reset the field-centric heading on left bumper press
@@ -131,6 +144,7 @@ public class RobotContainer {
   } 
 
   public Command getAutonomousCommand() {
+      latch.home();
       return autoChooser.getSelected();
    }
 

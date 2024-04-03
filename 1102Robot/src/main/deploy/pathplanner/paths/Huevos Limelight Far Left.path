@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.528154752195015,
+        "y": 6.985795510052559
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.366385963541159,
+        "y": 7.05486410972822
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.401965573161917,
+        "y": 7.341005451241672
+      },
+      "prevControl": {
+        "x": 6.780348176080968,
+        "y": 7.2818037943768195
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.8,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 4.289153328819008,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Alexi",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

@@ -2,19 +2,32 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.309243119380694,
-      "y": 5.521816553472107
+      "x": 0.5740411480822979,
+      "y": 4.17371680897208
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "getShooterSpunUp"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source Preload"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "getShooterSpunUp"
+                }
+              }
+            ]
           }
         },
         {
@@ -60,7 +73,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Note"
+                  "pathName": "Subwoofer Frogarty"
                 }
               },
               {
@@ -77,15 +90,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "armToScore"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Note Score"
+                  "pathName": "Frogarty Return to Shoot"
                 }
               },
               {
@@ -108,6 +115,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAimToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armToScore"
           }
         },
         {
@@ -147,7 +166,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Middle Note Candy"
+                  "pathName": "To Madison"
                 }
               },
               {
@@ -164,15 +183,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "armToScore"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "Middle Note Score"
+                  "pathName": "Madison Return to Shoot"
                 }
               },
               {
@@ -195,6 +208,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAimToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armToScore"
           }
         },
         {
@@ -234,7 +259,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Note Candy"
+                  "pathName": "To Russ"
                 }
               },
               {
@@ -253,13 +278,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Note Score"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "armToScore"
+                  "pathName": "Russ Return To Shoot"
                 }
               },
               {
@@ -287,6 +306,18 @@
         {
           "type": "named",
           "data": {
+            "name": "autoAimToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armToScore"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "shootNote"
           }
         },
@@ -306,31 +337,6 @@
           "type": "named",
           "data": {
             "name": "feederStop"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeSetpoint"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left Far"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "feederNoteIn"
-                }
-              }
-            ]
           }
         }
       ]

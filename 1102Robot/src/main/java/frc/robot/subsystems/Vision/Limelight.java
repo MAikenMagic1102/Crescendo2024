@@ -51,7 +51,15 @@ public class Limelight extends SubsystemBase {
 
   public boolean isAimedAtSpeaker(){
     double m_tx = Math.abs(tx.getDouble(0.0));
-    return m_tx > 0.0 && m_tx < 0.1;
+    return m_tx > 0.0 && m_tx < 1.0;
+  }
+
+  public boolean seesAprilTag(){
+    return LimelightHelpers.getTV("limelight-magic");
+  }
+
+  public boolean seesNote(){
+    return LimelightHelpers.getTV("limelight-note");
   }
 
 
@@ -59,6 +67,8 @@ public class Limelight extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Distance To Goal", getLimelightDistance());
     SmartDashboard.putNumber("TX Value", tx.getDouble(0.0));
+    SmartDashboard.putBoolean("Limelight Looky", LimelightHelpers.getTV("limelight-magic"));
+    SmartDashboard.putBoolean("Limelight Sees Note", seesNote());
 
     try{
       if ((!hasNotAppliedPrio || DriverStation.isDisabled())) {

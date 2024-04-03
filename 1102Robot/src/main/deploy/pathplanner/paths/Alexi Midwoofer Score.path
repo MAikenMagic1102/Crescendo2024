@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.23,
+        "y": 2.44
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.520368886891621,
+        "y": 1.9141869052968878
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.274144702135559,
+        "y": 1.460307535999688
+      },
+      "prevControl": {
+        "x": 5.606181981594733,
+        "y": 1.2432347941618975
+      },
+      "nextControl": {
+        "x": 3.399577315931022,
+        "y": 1.6028296285663528
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.15,
+        "y": 4.676930892323324
+      },
+      "prevControl": {
+        "x": 1.7284734569469153,
+        "y": 3.6705027256208367
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -32.40964474695751,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Madison",
+  "previewStartingState": {
+    "rotation": -33.19383087340492,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
